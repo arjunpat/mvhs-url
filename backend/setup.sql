@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS users (
+	email VARCHAR(100) PRIMARY KEY,
+	first_name VARCHAR(50),
+	last_name VARCHAR(50),
+	profile_pic VARCHAR(150),
+	created_time BIGINT UNSIGNED
+);
+CREATE TABLE IF NOT EXISTS urls (
+	shortened VARCHAR(50) PRIMARY KEY,
+	redirects_to TINYTEXT,
+	created_time BIGINT UNSIGNED,
+	expires BIGINT UNSIGNED,
+	registered_to VARCHAR(100)
+);
+CREATE TABLE IF NOT EXISTS hits (
+	db_id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+	time BIGINT UNSIGNED,
+	url TINYTEXT,
+	ip TINYTEXT,
+	referrer TINYTEXT
+);
