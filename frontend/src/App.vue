@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" style="height: 100%;">
     <div id="nav">
       <div id="title">
         <span @click="$router.push({ path: '/' })">MVHS URL Shortener</span>
@@ -19,6 +19,10 @@
   padding: 0;
   margin: 0;
   font-family: 'Roboto', sans-serif;
+}
+
+html, body {
+  height: 100%;
 }
 
 </style>

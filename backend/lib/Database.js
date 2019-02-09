@@ -27,7 +27,7 @@ class Database {
 				continue;
 
 			this.query(sql[i], []).then(val => {
-				console.log(val)
+				// console.log(val)
 			}).catch(err => {
 				console.log(err);
 				process.exit(1);
@@ -53,6 +53,10 @@ class Database {
 		});
 	}
 
+	getUrlsByEmail(email) {
+		return this.query('SELECT * FROM urls WHERE registered_to = ?', [email]);
+	}
+
 	createNewUser(d) {
 		return this.query(
 			'INSERT INTO users (email, first_name, last_name, profile_pic, created_time) VALUES (?, ?, ?, ?, ?)',
@@ -70,7 +74,7 @@ class Database {
 	createNewUrl(d) {
 		return this.query(
 			'INSERT INTO urls (shortened, redirects_to, created_time, expires, registered_to) VALUES (?, ?, ?, ?, ?)',
-			[d.shortened, d.redirects_to, Date.now(), d.expires, d.registered_to]
+			[d.shortened, d.redirects_to, d.now, d.expires, d.registered_to]
 		);
 	}
 
