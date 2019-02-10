@@ -80,7 +80,7 @@ export default {
       expires_in = isNaN(parseInt(expires_in)) ? expires_in : parseInt(expires_in);
 
       this.shortened = '';
-      this.redirect_to = '';
+      this.redirects_to = '';
       this.expires_in = '604800000';
 
       window.fetch(`${serverHost}/api/create`, {

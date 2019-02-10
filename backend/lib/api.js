@@ -1,8 +1,10 @@
-const https = require('https');
 const router = require('express').Router();
 const responses = require('./responses');
 const Database = require('./Database');
 const HttpToken = require('./HttpToken');
+
+const fetch = require('node-fetch');
+const { URLSearchParams } = require('url');
 
 let {
 	MYSQL_USER,
@@ -23,39 +25,11 @@ const database = new Database(
 
 const httpToken = new HttpToken(ENCRYPTION_SECRET, INIT_VECTOR, CLIENT_SECRET);
 
-function get(url) {
-	return new Promise((resolve, reject) => {
-
-		let req = https.get(url, res => {
-			let output = '';
-			res.setEncoding('utf8');
-
-			res.on('data', chunk => output += chunk);
-
-			res.on('end', () => {
-				let obj = JSON.parse(output);
-
-				if (obj) {
-					resolve(obj);
-				} else {
-					reject();
-				}
-
-			});
-		});
-
-		req.on('error', err => {
-			reject(err);
-		});
-
-		req.end();
-	});
-}
-
 router.post('/login', async (req, res) => {
 	let accessToken = req.body.accessToken;
 
-	let result = await get(new URL('https://www.googleapis.com/oauth2/v3/userinfo?access_token=' + accessToken));
+	let result = await fetch('https://www.googleapis.com/oauth2/v3/userinfo?access_token=' + accessToken);
+	result = await result.json();
 	
 	if (!result.email_verified)
 		return responses.error('email_not_verified');
@@ -97,7 +71,7 @@ router.post('/create', async (req, res) => {
 		return res.send(responses.error('bad_token'));
 	
 	let email = tokenContents.email;
-	let profile = database.getUserByEmail(email);
+	let profile = await database.getUserByEmail(email);
 
 	if (!profile)
 		return res.send(responses.error('no_account'));
@@ -110,6 +84,19 @@ router.post('/create', async (req, res) => {
 		return res.send(responses.error('missing_data'));
 	
 	// TODO recaptcha validation
+
+	let params = new URLSearchParams();
+	params.append('secret', process.env.RECAPTCHA_SECRET);
+	params.append('response', req.body.recaptchaToken);
+
+	let recaptchaVerification = await (await fetch('https://www.google.com/recaptcha/api/siteverify', {
+		method: 'POST',
+		body: params
+	})).json();
+
+	if (!recaptchaVerification.success) {
+		return res.json(responses.error('bad_recaptcha'));
+	}
 	
 	if (typeof expires_in === 'number') {
 		expires += expires_in;
@@ -132,7 +119,7 @@ router.post('/create', async (req, res) => {
 	}
 });
 
-router.get('/account-details', async (req, res) => {
+router.get('/account-urls', async (req, res) => {
 	let token = req.cookies.mvhs_url;
 
 	if (!token)
@@ -144,12 +131,13 @@ router.get('/account-details', async (req, res) => {
 		return res.send(responses.error('bad_token'));
 	
 	let email = tokenContents.email;
-	let profile = database.getUserByEmail(email);
+	let profile = await database.getUserByEmail(email);
 
 	if (!profile)
 		return res.send(responses.error('no_account'));
 
 	let results = await database.getUrlsByEmail(email);
+	let hits = await database.getHitsByEmail(email);
 	let urls = [];
 
 	for (let i = 0; i < results.length; i++) {
@@ -158,12 +146,38 @@ router.get('/account-details', async (req, res) => {
 			shortened: result.shortened,
 			redirects_to: result.redirects_to,
 			expires: result.expires,
-			created_time: result.created_time
+			created_time: result.created_time,
+			clicks: hits.filter(h => h.shortened === result.shortened).length
 		})
 	}
 
 	res.send(responses.success(urls));
 
+});
+
+router.get('/profile', async (req, res) => {
+	let token = req.cookies.mvhs_url;
+
+	if (!token)
+		return res.send(responses.error('no_cookie'));
+
+	let tokenContents = httpToken.verifyAndDecrypt(token);
+
+	if (!tokenContents)
+		return res.send(responses.error('bad_token'));
+	
+	let email = tokenContents.email;
+	let profile = await database.getUserByEmail(email);
+
+	if (!profile)
+		return res.send(responses.error('no_account'));
+	
+	res.send(responses.success({
+		first_name: profile.first_name,
+		last_name: profile.last_name,
+		profile_pic: profile.profile_pic,
+		email: profile.email
+	}));
 });
 
 router.get('/:shortened', async (req, res, next) => {
@@ -176,6 +190,12 @@ router.get('/:shortened', async (req, res, next) => {
 		return next();
 
 	res.redirect(302, result.redirects_to);
+
+	await database.createNewHit({
+		shortened: req.params.shortened,
+		ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+		referrer: req.headers.referer || null
+	});
 });
 
 module.exports = router;

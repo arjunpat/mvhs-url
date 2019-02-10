@@ -56,6 +56,10 @@ class Database {
 	getUrlsByEmail(email) {
 		return this.query('SELECT * FROM urls WHERE registered_to = ?', [email]);
 	}
+	
+	getHitsByEmail(email) {
+		return this.query('SELECT * FROM hits WHERE shortened IN (SELECT shortened FROM urls WHERE registered_to = ?)', [email]);
+	}
 
 	createNewUser(d) {
 		return this.query(
@@ -66,8 +70,8 @@ class Database {
 
 	createNewHit(d) {
 		return this.query(
-			'INSERT INTO hits (time, url, ip, referrer) VALUES (?, ?, ?, ?)',
-			[Date.now(), d.url, d.ip, d.referrer]
+			'INSERT INTO hits (time, shortened, ip, referrer) VALUES (?, ?, ?, ?)',
+			[Date.now(), d.shortened, d.ip, d.referrer]
 		);
 	}
 

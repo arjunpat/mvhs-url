@@ -7,11 +7,34 @@
       <div id="nav-links">
         <router-link to="/">Home</router-link>
         <router-link to="/account">My Account</router-link>
+        <img style="height: 40px; width: 40px; border-radius: 50%; margin-left: 10px;" v-show="profile_pic" :src="profile_pic">
       </div>
     </div>
     <router-view/>
   </div>
 </template>
+
+<script>
+import { serverHost } from '@/constants';
+
+export default {
+  data() {
+    return {
+      profile_pic: ''
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      window.fetch(`${serverHost}/api/profile`, {
+        credentials: 'include'
+      }).then(res => res.json()).then(res => {
+        this.profile_pic = res.data.profile_pic;
+      });
+    }, 1000);
+  }
+}
+</script>
+
 
 <style>
 
@@ -44,6 +67,7 @@ html, body {
 #nav-links {
   float: right;
   padding: 20px;
+  display: flex;
 }
 
 #nav-links > a {
