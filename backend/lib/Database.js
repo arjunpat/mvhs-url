@@ -46,19 +46,34 @@ class Database {
 	}
 
 	getUrlByShortened(shortened) {
-		return this.query('SELECT * FROM urls WHERE shortened = ?', [ shortened ]).then(results => {
+		return this.query('SELECT * FROM urls WHERE shortened = ? ORDER BY created_time DESC LIMIT 1', [ shortened ]).then(results => {
 			if (results.length !== 1) return false;
 			
 			return results[0];
 		});
 	}
 
+	getUrlById(id) {
+		return this.query('SELECT * FROM urls WHERE id = ?', [ id ]).then(result => {
+			if (result.length !== 1) return false;
+
+			return result[0];
+		});
+	}
+
 	getUrlsByEmail(email) {
-		return this.query('SELECT * FROM urls WHERE registered_to = ?', [email]);
+		return this.query('SELECT * FROM urls WHERE registered_to = ?', [ email ]);
 	}
 	
 	getHitsByEmail(email) {
-		return this.query('SELECT * FROM hits WHERE shortened IN (SELECT shortened FROM urls WHERE registered_to = ?)', [email]);
+		return this.query(
+			'SELECT * FROM hits WHERE url_id IN (SELECT id FROM urls WHERE registered_to = ?)',
+			[ email ]
+		);
+	}
+
+	getHitsByUrlId(id) {
+		return this.query('SELECT * FROM hits WHERE url_id = ?', [ id ]);
 	}
 
 	createNewUser(d) {
@@ -70,15 +85,15 @@ class Database {
 
 	createNewHit(d) {
 		return this.query(
-			'INSERT INTO hits (time, shortened, ip, referrer) VALUES (?, ?, ?, ?)',
-			[Date.now(), d.shortened, d.ip, d.referrer]
+			'INSERT INTO hits (time, url_id, ip, referrer) VALUES (?, ?, ?, ?)',
+			[d.time, d.url_id, d.ip, d.referrer]
 		);
 	}
 
 	createNewUrl(d) {
 		return this.query(
-			'INSERT INTO urls (shortened, redirects_to, created_time, expires, registered_to) VALUES (?, ?, ?, ?, ?)',
-			[d.shortened, d.redirects_to, d.now, d.expires, d.registered_to]
+			'INSERT INTO urls (id, shortened, redirects_to, created_time, expires, registered_to) VALUES (?, ?, ?, ?, ?, ?)',
+			[d.id, d.shortened, d.redirects_to, d.now, d.expires, d.registered_to]
 		);
 	}
 

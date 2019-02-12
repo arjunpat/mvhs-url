@@ -7,7 +7,8 @@
       <div id="nav-links">
         <router-link to="/">Home</router-link>
         <router-link to="/account">My Account</router-link>
-        <img style="height: 40px; width: 40px; border-radius: 50%; margin-left: 10px;" v-show="profile_pic" :src="profile_pic">
+        <router-link to="/logout">Logout</router-link>
+        <img @click="logout()" id="profile-pic" v-show="profile_pic" :src="profile_pic">
       </div>
     </div>
     <router-view/>
@@ -31,6 +32,11 @@ export default {
         this.profile_pic = res.data.profile_pic;
       });
     }, 1000);
+  },
+  methods: {
+    logout() {
+
+    }
   }
 }
 </script>
@@ -79,6 +85,15 @@ html, body {
 
 #nav-links > a:hover {
   background: #eee;
+}
+
+#profile-pic {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: .2s ease all;
 }
 
 </style>

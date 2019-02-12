@@ -1,11 +1,13 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from 'vue';
+import Router from 'vue-router';
 
-import Home from './views/Home.vue'
+import Home from './views/Home.vue';
 import AccountHome from './views/account/Home.vue';
+import AccountUrl from './views/account/Url.vue';
+import Expired from './views/Expired.vue';
+import Logout from './views/Logout.vue';
 
-
-Vue.use(Router)
+Vue.use(Router);
 
 let router = new Router({
   mode: 'history',
@@ -28,6 +30,30 @@ let router = new Router({
       component: AccountHome,
       meta: {
         title: 'Account - MVHS URL Shortener'
+      }
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      component: Logout,
+      meta: {
+        title: 'Logout - MVHS URL Shortener'
+      }
+    },
+    {
+      path: '/expired',
+      name: 'expired',
+      component: Expired,
+      meta: {
+        title: 'Expired - MVHS URL Shortener'
+      }
+    },
+    {
+      path: '/account/url/:id',
+      name: 'account-url',
+      component: AccountUrl,
+      meta: {
+        title: 'URL - MVHS URL Shortener'
       }
     }
   ]

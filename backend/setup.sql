@@ -3,20 +3,25 @@ CREATE TABLE IF NOT EXISTS users (
 	first_name VARCHAR(50),
 	last_name VARCHAR(50),
 	profile_pic VARCHAR(150),
-	created_time BIGINT UNSIGNED
+	created_time BIGINT UNSIGNED,
+	INDEX (email)
 );
 CREATE TABLE IF NOT EXISTS urls (
-	shortened VARCHAR(50) PRIMARY KEY,
+	id VARCHAR(30) PRIMARY KEY,
+	shortened VARCHAR(50),
 	redirects_to TINYTEXT,
 	created_time BIGINT UNSIGNED,
 	expires BIGINT UNSIGNED,
-	registered_to VARCHAR(100)
+	registered_to VARCHAR(100),
+	INDEX (shortened),
+	INDEX (registered_to),
+	INDEX (created_time)
 );
 CREATE TABLE IF NOT EXISTS hits (
 	db_id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	time BIGINT UNSIGNED,
-	shortened VARCHAR(50),
+	url_id VARCHAR(30),
 	ip TINYTEXT,
 	referrer TINYTEXT,
-	INDEX (shortened)
+	INDEX (url_id)
 );

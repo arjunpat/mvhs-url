@@ -5,16 +5,18 @@
         <span style="font-family: 'Product Sans'; font-size: 50px; font-weight: bold;">Simplfiy your links</span>
         <br>
         <br>
-        <span style="font-size: 20px;">url.mvhs.io/u/&nbsp;</span><input style="width: 30%; padding-left: 4px;" type="text" placeholder="Your shortened URL" v-model="shortened">
+        <span style="font-size: 20px;">url.mvhs.io/u/&nbsp;</span><input style="width: 30%; padding-left: 4px;" type="text" placeholder="Anything you choose" v-model="shortened">
+        <br>
+        <span v-show="shortened && !/^[A-Za-z0-9-_.]+$/g.test(shortened)" style="color: red; font-weight: bold;">Your shortened URL can only contain alphanumeric, underscore, dash, and period characters.</span>
         <br>
         <br>
         <br>
         <input type="text" placeholder="Your original URL here" v-model="redirects_to">
+        <br><br>
+        <span v-show="redirects_to && !/((http(s)?(\:\/\/))+(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))[^\s\b\n|]*[^.,;:\?\!\@\^\$ -]/.test(redirects_to)" style="color: red; font-weight: bold;">Please enter a complete URL</span>
         <br>
         <br>
-        <br>
-        <br>
-        <span style="display: block; margin-bottom: 10px;">When do you want this link to expire?</span>
+        <span style="display: block; margin-bottom: 10px;">When do you want this link to expire (or become inactive)?</span>
         <select v-model="expires_in">
           <optgroup label="Soon">
             <option value="86400000">1 day</option>
@@ -35,10 +37,9 @@
         <br>
         <br>
         <br>
-        <br>
         <div id="recaptcha-div"></div>
         <br>
-        <button v-show="recaptchaToken && shortened && redirects_to && expires_in" @click="create()">Shorten URL</button>
+        <button v-show="recaptchaToken && shortened && /((http(s)?(\:\/\/))+(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))[^\s\b\n|]*[^.,;:\?\!\@\^\$ -]/.test(redirects_to) && expires_in" @click="create()">Shorten URL</button>
       </div>
     </div>
   </div>
