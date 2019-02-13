@@ -97,6 +97,10 @@ class Database {
 		);
 	}
 
+	cancelUrlById(id) {
+		return this.query('UPDATE urls SET expires = ? WHERE id = ?', [ Date.now(), id ]);
+	}
+
 	updateUser(vals) {
 		return this.query(
 			'UPDATE users SET first_name = ?, last_name = ?, profile_pic = ? WHERE email = ?',

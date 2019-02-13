@@ -16,7 +16,7 @@
         <span v-show="redirects_to && !/((http(s)?(\:\/\/))+(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))[^\s\b\n|]*[^.,;:\?\!\@\^\$ -]/.test(redirects_to)" style="color: red; font-weight: bold;">Please enter a complete URL</span>
         <br>
         <br>
-        <span style="display: block; margin-bottom: 10px;">When do you want this link to expire (or become inactive)?</span>
+        <span style="display: block; margin-bottom: 10px;">When do you want this link to expire? This frees up the name for other user to use</span>
         <select v-model="expires_in">
           <optgroup label="Soon">
             <option value="86400000">1 day</option>

@@ -1,5 +1,5 @@
 <template>
-  <tr class="url" :class="expired ? 'expired' : ''">
+  <tr class="url" :class="url.expired ? 'expired' : ''">
     <td>
       <a
         :href="shortenedUrl"
@@ -8,9 +8,11 @@
     </td>
     <td>{{ redirectsTo }}</td>
     <td>{{ dateToString(url.created_time) }}</td>
-    <td :style="{ color: expired ? 'red' : 'green'}">{{ expires }}</td>
+    <td :style="{ color: url.expired ? 'red' : 'green'}">{{ expires }}</td>
     <td>{{ url.clicks }}</td>
-    <td class="more" @click="$router.push({ path: '/account/url/' + url.id })">More Info</td>
+    <td>
+      <div @click="$router.push({ path: '/account/url/' + url.id })" class="more">More Info</div>
+    </td>
   </tr>
 </template>
 
@@ -18,7 +20,7 @@
 export default {
   props: ['url'],
   created() {
-    this.expired = this.url.expires < Date.now();
+    this.url.expired = !(this.url.expires > Date.now() || this.url.expires === null);
   },
   methods: {
     dateToString(date) {
@@ -49,7 +51,7 @@ export default {
     shortenedUrl() {
       let origin = window.location.origin;
 
-      if (this.expired) {
+      if (this.url.expired) {
         return origin + '/expired?shortened=' + encodeURIComponent(this.url.shortened);
       }
 
@@ -81,14 +83,14 @@ export default {
 <style scoped>
 
 .url {
-  transition: background 150ms ease;
+  transition: all 150ms ease;
 }
 
 .expired {
 }
 
 .url:hover {
-  background: #eee;
+  background: rgb(238, 238, 238);
 }
 
 td {
@@ -99,11 +101,17 @@ td {
 .more {
   color: #1a73e8;
   cursor: pointer;
-  transition: color 150ms ease;
+  transition: all 150ms ease;
+  background: rgb(238, 238, 238);
+  padding: 4px 8px;
+  margin: 2px;
+  width: 70px;
+  border-radius: 6px;
 }
 
 .more:hover {
   color: #0049a8;
+  background: rgb(220, 220, 220);
 }
 
 </style>

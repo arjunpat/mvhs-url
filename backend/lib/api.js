@@ -246,7 +246,9 @@ router.get('/details/:url_id', async (req, res) => {
 
 	let hits = await database.getHitsByUrlId(url_id);
 
-	let hitsByDay = [];
+	let timezoneOffsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
+
+	let hitsByDay = {};
 	if (hits.length > 0) {
 		let oneWeekTimeFromLastHit = hits[hits.length - 1].time - 6.048e8;
 		for (let i = hits.length - 1; i >= 0; i--) {
@@ -255,17 +257,13 @@ router.get('/details/:url_id', async (req, res) => {
 			if (hit.time < oneWeekTimeFromLastHit) {
 				break;
 			}
-
-			let d = new Date(hit.time);
+			let d = new Date(hit.time - timezoneOffsetMs);
 			let dateString = d.toISOString().split('T')[0];
 
-			if (!hitsByDay[0] || hitsByDay[0].date !== dateString) {
-				hitsByDay.unshift({
-					date: dateString,
-					hits: 1
-				});
+			if (hitsByDay[dateString]) {
+				hitsByDay[dateString]++;
 			} else {
-				hitsByDay[0].hits++;
+				hitsByDay[dateString] = 1;
 			}
 		}
 	}
@@ -278,6 +276,25 @@ router.get('/details/:url_id', async (req, res) => {
 		expires: url.expires,
 		clicks: hits.length
 	}));
+});
+
+router.post('/cancel', async (req, res) => {
+	let email = verifyToken(req, res); // || return;
+
+	if (!email) {
+		return;
+	}
+
+	let url_id = req.body.url_id;
+	let url = await database.getUrlById(url_id);
+
+	if (!url) {
+		return res.send(responses.error('does_not_exist'));
+	}
+
+	await database.cancelUrlById(url_id);
+
+	res.send(responses.success());
 });
 
 module.exports = router;
