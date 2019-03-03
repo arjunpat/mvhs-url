@@ -5,7 +5,8 @@
       <p v-if="url.expired" style="background: #ddd; color: #ff0000; display: inline-block; padding: 6px 10px; margin-bottom: 20px; font-weight: bold; border-radius: 4px;">This shortened URL has already expired and may now be in use by another user</p>
       <div v-if="!url.expired" style="margin-bottom: 10px;">
         <span style="display: block; font-weight: bold; font-size: 20px; margin-bottom: 4px;">Your options</span>
-        <button @click="cancel()" style="margin-left: 20px;">Cancel</button>
+        <button @click="cancel()" style="margin-left: 20px;">Cancel URL Now</button>
+        <button @click="change()" style="margin-left: 20px;">Change Link</button>
       </div>
       <p>Redirects to: <span class="code">{{ url.redirects_to }}</span></p>
       <p>Total clicks: {{ url.clicks }}</p>
@@ -34,6 +35,9 @@ export default {
   },
   methods: {
     toDateString(date) {
+      if (!date)
+        return "Never";
+
       let now = Date.now();
       let distance = Date.now() - date;
 
@@ -50,11 +54,14 @@ export default {
         timeZone: 'America/Los_Angeles'
       });
     },
+    change() {
+      alert('In order to change the link of this URL, do the following:\n\n1. Cancel this current URL by clicking the \'Cancel URL now\' button\n2. Go to the home page and create a new URL under the same name, this time using your new link');
+    },
     cancel() {
 
-      prompt(`To confirm you want to delete this, type /u/${this.url.shortened} below:`);
+      prompt(`To confirm you want to delete this, type url.mvhs.io/u/${this.url.shortened} below:`);
 
-      if (prompt !== '/u/' + this.url.shortened)
+      if (prompt !== 'url.mvhs.io/u/' + this.url.shortened)
         return;
 
       window.fetch(`${serverHost}/api/cancel`,{

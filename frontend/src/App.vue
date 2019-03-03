@@ -7,6 +7,7 @@
       <div id="nav-links">
         <router-link to="/">Home</router-link>
         <router-link to="/account">My Account</router-link>
+        <router-link v-if="isAdmin" to="/admin">Admin</router-link>
         <router-link to="/logout">Logout</router-link>
         <img @click="logout()" id="profile-pic" v-show="profile_pic" :src="profile_pic">
       </div>
@@ -21,7 +22,8 @@ import { serverHost } from '@/constants';
 export default {
   data() {
     return {
-      profile_pic: ''
+      profile_pic: '',
+      isAdmin: false
     }
   },
   mounted() {
@@ -30,6 +32,7 @@ export default {
         credentials: 'include'
       }).then(res => res.json()).then(res => {
         this.profile_pic = res.data.profile_pic;
+        this.isAdmin = res.data.isAdmin;
       });
     }, 1000);
   },

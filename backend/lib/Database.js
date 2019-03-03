@@ -76,10 +76,18 @@ class Database {
 		return this.query('SELECT * FROM hits WHERE url_id = ?', [ id ]);
 	}
 
+	getAllUrls() {
+		return this.query('SELECT * FROM urls');
+	}
+
+	getAllUsers() {
+		return this.query('SELECT * FROM users');
+	}
+
 	createNewUser(d) {
 		return this.query(
-			'INSERT INTO users (email, first_name, last_name, profile_pic, created_time) VALUES (?, ?, ?, ?, ?)',
-			[d.email, d.first_name, d.last_name, d.profile_pic, Date.now()],
+			'INSERT INTO users (email, first_name, last_name, profile_pic, created_time, is_suspended) VALUES (?, ?, ?, ?, ?, ?)',
+			[d.email, d.first_name, d.last_name, d.profile_pic, Date.now(), 1],
 		);
 	}
 

@@ -9,7 +9,8 @@
     <td>{{ redirectsTo }}</td>
     <td>{{ dateToString(url.created_time) }}</td>
     <td :style="{ color: url.expired ? 'red' : 'green'}">{{ expires }}</td>
-    <td>{{ url.clicks }}</td>
+    <td>{{ url.clicks ? url.clicks : '0' }}</td>
+    <td v-if="url.registered_to">{{ url.registered_to }}</td>
     <td>
       <div @click="$router.push({ path: '/account/url/' + url.id })" class="more">More Info</div>
     </td>

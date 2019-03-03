@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="title" :class="isLoading ? 'loading': ''">Your Account</span>
+    <span class="title" :class="isLoading ? '': ''">Your Account</span>
     <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
       <span style="font-weight: bold; font-size: 22px;">Your Shortened URLs</span>
       <br>
@@ -24,7 +24,7 @@
 <script>
 import { serverHost } from '@/constants';
 import { getCookie } from '@/utils.js';
-import Url from './components/Url.vue';
+import Url from '@/views/components/Url.vue';
 
 export default {
   components: {
@@ -76,7 +76,7 @@ table {
 
 th {
   text-align: left;
-  padding: 4px;
+  padding: 8px;
 }
 
 @keyframes rainbowColors {

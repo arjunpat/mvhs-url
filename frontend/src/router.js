@@ -4,6 +4,7 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import AccountHome from './views/account/Home.vue';
 import AccountUrl from './views/account/Url.vue';
+import AdminHome from './views/admin/Home.vue';
 import Expired from './views/Expired.vue';
 import Logout from './views/Logout.vue';
 
@@ -31,6 +32,18 @@ let router = new Router({
       meta: {
         title: 'Account - MVHS URL Shortener'
       }
+    },
+    {
+      path: '/admin/home',
+      name: 'admin-home',
+      component: AdminHome,
+      meta: {
+        title: 'Admin Home - MVHS URL Shortener'
+      }
+    },
+    {
+      path: '/admin',
+      redirect: '/admin/home'
     },
     {
       path: '/logout',
