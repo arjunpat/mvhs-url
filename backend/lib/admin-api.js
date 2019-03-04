@@ -40,6 +40,22 @@ router.get('/all', async (req, res) => {
     
 });
 
+router.post('/toggle-suspension', async (req, res) => {
+  let email = verifyToken(req, res);
+
+  if (!email) {
+    return;
+  }
+
+  if (!req.body.email) {
+    return res.send(responses.error('missing_data'));
+  }
+
+  await database.toggleSuspension(req.body.email);
+
+  return res.send(responses.success());
+});
+
 module.exports = (a, b, c) => {
   httpToken = a;
   database = b;

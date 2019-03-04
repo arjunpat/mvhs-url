@@ -2,7 +2,7 @@
   <div id="main">
     <div id="url-maker">
       <div>
-        <span style="font-family: 'Product Sans'; font-size: 50px; font-weight: bold;">Simplfiy your links</span>
+        <span style="font-family: 'Product Sans'; font-size: 50px; font-weight: bold;">Simplify your links</span>
         <br>
         <br>
         <span style="font-size: 20px;">url.mvhs.io/u/&nbsp;</span><input style="width: 30%; padding-left: 4px;" type="text" placeholder="Anything you choose" v-model="shortened">
@@ -16,7 +16,7 @@
         <span v-show="redirects_to && !/((http(s)?(\:\/\/))+(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))[^\s\b\n|]*[^.,;:\?\!\@\^\$ -]/.test(redirects_to)" style="color: red; font-weight: bold;">Please enter a complete URL</span>
         <br>
         <br>
-        <span style="display: block; margin-bottom: 10px;">When do you want this link to expire? This frees up the name for other user to use</span>
+        <span style="display: block; margin-bottom: 10px;">When do you want this link to expire? This frees up the name for other users to use</span>
         <select v-model="expires_in">
           <optgroup label="Soon">
             <option value="86400000">1 day</option>
@@ -80,26 +80,15 @@ export default {
       let expires_in = this.expires_in;
       expires_in = isNaN(parseInt(expires_in)) ? expires_in : parseInt(expires_in);
 
-      this.shortened = '';
-      this.redirects_to = '';
-      this.expires_in = '604800000';
 
-      window.fetch(`${serverHost}/api/create`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      this.$router.push({
+        path: '/create-url?data=' + encodeURIComponent(JSON.stringify({
           shortened,
           redirects_to,
           recaptchaToken,
           expires_in
-        })
-      }).then(res => res.json()).then(val => {
-        console.log(val);
+        }))
       });
-
     }
   },
   mounted() {

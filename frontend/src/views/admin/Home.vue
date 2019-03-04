@@ -27,13 +27,15 @@
             <th>Email</th>
             <th>Name</th>
             <th>Created account</th>
+            <th>Amount of URLs</th>
             <th>Suspend account</th>
           </tr>
           <tr v-for="user of users" :key="user.email">
             <td>{{ user.email }}</td>
-            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>{{ user.first_name + ' ' + user.last_name }}</td>
             <td>{{ dateToString(user.created_time) }}</td>
-            <td style="color: blue; cursor: pointer;">{{ user.is_suspended ? 'Unsuspend' : 'Suspend' }}</td>
+            <td>{{ user.__url_amount }}</td>
+            <td style="color: blue; cursor: pointer;" @click="() => suspendUser(user)">{{ user.is_suspended ? 'Unsuspend' : 'Suspend' }}</td>
           </tr>
         </table>
       </div>
@@ -64,6 +66,9 @@ export default {
       }).then(res => res.json()).then(val => {
         this.urls = val.data.urls.sort((a, b) => b.created_time - a.created_time);
         this.users = val.data.users.sort((a, b) => b.created_time - a.created_time);
+        this.users.forEach(user => {
+          user.__url_amount = this.urls.filter(u => u.registered_to === user.email).length;
+        });
         this.isLoading = false;
       });
     },
@@ -83,6 +88,22 @@ export default {
         month: 'short',
         day: 'numeric',
         timeZone: 'America/Los_Angeles'
+      });
+    },
+    suspendUser(user) {
+      if (!user.is_suspended && (!confirm('Are you sure you want to suspend this account?') || !confirm(user.email + ' will no longer be able to create new urls?'))) {
+        return;
+      }
+
+      window.fetch(`${serverHost}/api/admin/toggle-suspension`, {
+        credentials: 'include',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: user.email })
+      }).then(res => res.json()).then(val => {
+        this.init();
       });
     }
   }

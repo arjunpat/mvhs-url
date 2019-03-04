@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Home from './views/Home.vue';
+import CreateUrl from './views/CreateUrl.vue';
 import AccountHome from './views/account/Home.vue';
 import AccountUrl from './views/account/Url.vue';
 import AdminHome from './views/admin/Home.vue';
@@ -19,6 +20,14 @@ let router = new Router({
       component: Home,
       meta: {
         title: 'Home - MVHS URL Shortener'
+      }
+    },
+    {
+      path: '/create-url',
+      name: 'create-url',
+      component: CreateUrl,
+      meta: {
+        title: 'Create URL - MVHS URL Shortener'
       }
     },
     {

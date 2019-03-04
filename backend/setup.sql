@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
 	last_name VARCHAR(50),
 	profile_pic VARCHAR(150),
 	created_time BIGINT UNSIGNED,
-	is_suspended BOOLEAN,
+	is_suspended BOOLEAN NOT NULL default 0,
 	INDEX (email)
 );
 CREATE TABLE IF NOT EXISTS urls (

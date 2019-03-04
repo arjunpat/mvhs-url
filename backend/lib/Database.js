@@ -83,11 +83,15 @@ class Database {
 	getAllUsers() {
 		return this.query('SELECT * FROM users');
 	}
+	
+	toggleSuspension(email) {
+		return this.query('UPDATE users SET is_suspended = !is_suspended WHERE email = ?', [ email ]);
+	}
 
 	createNewUser(d) {
 		return this.query(
-			'INSERT INTO users (email, first_name, last_name, profile_pic, created_time, is_suspended) VALUES (?, ?, ?, ?, ?, ?)',
-			[d.email, d.first_name, d.last_name, d.profile_pic, Date.now(), 1],
+			'INSERT INTO users (email, first_name, last_name, profile_pic, created_time) VALUES (?, ?, ?, ?, ?)',
+			[d.email, d.first_name, d.last_name, d.profile_pic, Date.now()],
 		);
 	}
 

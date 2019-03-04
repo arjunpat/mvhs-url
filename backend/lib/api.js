@@ -88,6 +88,9 @@ router.post('/create', async (req, res) => {
   if (!profile)
     return res.send(responses.error('no_account'));
 
+  if (profile.is_suspended)
+    return res.send(responses.error('suspended_account'));
+
   let { shortened, redirects_to, expires_in, recaptchaToken } = req.body;
   let now = Date.now();
   let expires = now;
