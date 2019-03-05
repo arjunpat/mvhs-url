@@ -29,6 +29,10 @@ function verifyToken(req, res) {
   return tokenContents.email;
 }
 
+function inUse(url, time) {
+  return url && (url.expires > time || url.expires === null);
+}
+
 router.post('/login', async (req, res) => {
   let accessToken = req.body.accessToken;
 
@@ -117,9 +121,9 @@ router.post('/create', async (req, res) => {
     return res.json(responses.error('bad_recaptcha'));
   }
 
-  let url = await database.getUrlByShortened(shortened);
+  let url = await database.getLatestUrlByShortened(shortened);
 
-  if (url && (url.expires > now || url.expires === null)) {
+  if (inUse(url, now)) {
     return res.send(responses.error('shortened_exists'));
   }
   
@@ -257,7 +261,7 @@ router.post('/cancel', async (req, res) => {
   let url_id = req.body.url_id;
   let url = await database.getUrlById(url_id);
 
-  if (!adminEmails.inclues(email) && url.registered_to !== email) {
+  if (!adminEmails.includes(email) && url.registered_to !== email) {
     return res.send(responses.error('not_auth'));
   }
 
@@ -268,6 +272,26 @@ router.post('/cancel', async (req, res) => {
   await database.cancelUrlById(url_id);
 
   res.send(responses.success());
+});
+
+router.post('/availability', async (req, res) => {
+  let email = verifyToken(req, res);
+
+  if (!email) {
+    return;
+  }
+
+  let url = await database.getLatestUrlByShortened(req.body.shortened);
+
+  if (inUse(url, Date.now())) {
+    return res.send(responses.success({
+      availability: 'none'
+    }));
+  }
+
+  res.send(responses.success({
+    availability: 'available'
+  }));
 });
 
 module.exports = (a, b, c) => {

@@ -59,9 +59,9 @@ export default {
     },
     cancel() {
 
-      prompt(`To confirm you want to delete this, type url.mvhs.io/u/${this.url.shortened} below:`);
+      let question = prompt(`To confirm you want to delete this, type url.mvhs.io/u/${this.url.shortened} below:`);
 
-      if (prompt !== 'url.mvhs.io/u/' + this.url.shortened)
+      if (question !== 'url.mvhs.io/u/' + this.url.shortened)
         return;
 
       window.fetch(`${serverHost}/api/cancel`,{
@@ -105,6 +105,7 @@ export default {
           datasets: [
             {
               label: 'Hits',
+              fill: true,
               data: (() => {
                 let arr = [];
 
@@ -114,7 +115,7 @@ export default {
 
                 return arr;
               })(),
-              backgroundColor: 'rgba(0, 0, 0, 0)',
+              backgroundColor: '#ff0000',
               borderColor: '#ff0000'
             }
           ]

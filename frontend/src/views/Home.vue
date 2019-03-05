@@ -5,9 +5,18 @@
         <span style="font-family: 'Product Sans'; font-size: 50px; font-weight: bold;">Simplify your links</span>
         <br>
         <br>
-        <span style="font-size: 20px;">url.mvhs.io/u/&nbsp;</span><input style="width: 30%; padding-left: 4px;" type="text" placeholder="Anything you choose" v-model="shortened">
+        <span style="font-size: 20px;">url.mvhs.io/u/&nbsp;</span>
+        <input style="width: 30%; padding-left: 4px;" type="text" placeholder="Anything you choose" v-model="shortened">
+        <i class="material-icons"
+          style="font-size: 36px; margin-left: 8px; vertical-align: middle;"
+          :style="{
+            color: availability === 'check_circle' ? 'green' : availability === 'block' ? 'red' : 'black',
+            animation: availability === 'cached' ? 'spin 1.2s linear infinite' : ''
+          }"
+        >{{ availability }}</i>
         <br>
-        <span v-show="shortened && !/^[A-Za-z0-9-_.]+$/g.test(shortened)" style="color: red; font-weight: bold;">Your shortened URL can only contain alphanumeric, underscore, dash, and period characters.</span>
+        <div v-show="shortened && !/^[A-Za-z0-9-_.]+$/g.test(shortened)" style="color: red; font-weight: bold; margin-top: 20px;">Your shortened URL can only contain alphanumeric, underscore, dash, and period characters.</div>
+        <div v-show="shortened && availability === 'block'" style="color: red; font-weight: bold; margin-top: 20px;">This shortened URL is already in use or not available.</div>
         <br>
         <br>
         <br>
@@ -56,7 +65,8 @@ export default {
       recaptchaToken: '',
       shortened: '',
       redirects_to: '',
-      expires_in: '604800000'
+      expires_in: '604800000',
+      availability: '' // check_circle, block, cached
     }
   },
   methods: {
@@ -89,6 +99,40 @@ export default {
           expires_in
         }))
       });
+    }
+  },
+  watch: {
+    shortened() {
+      let current = this.shortened;
+      if (current === '' || !/^[A-Za-z0-9-_.]+$/g.test(current)) {
+        this.availability = 'block';
+        return;
+      }
+
+      this.availability = 'cached';
+
+      setTimeout(() => {
+        if (current !== this.shortened)
+          return;
+
+        window.fetch(`${serverHost}/api/availability`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            shortened: this.shortened
+          })
+        }).then(res => res.json()).then(res => {
+
+          if (res.data.availability === 'none') {
+            this.availability = 'block';
+          } else if (res.data.availability === 'available') {
+            this.availability = 'check_circle'
+          }
+        });
+      }, 500);
     }
   },
   mounted() {
@@ -131,7 +175,7 @@ export default {
         if (window.location.href.includes('localhost')) {
           document.cookie = `mvhs_url=${res.data.token}; Max-Age=2592000`;
         }
-      })
+      });
 
     } else {
       let redirectPath = encodeURIComponent(window.location.protocol + '//' + window.location.host + window.location.pathname.split('/').slice(0, -1).join('/'));
@@ -143,12 +187,24 @@ export default {
       }
 
       let url = `https://accounts.google.com/o/oauth2/auth?client_id=${params.client_id}&redirect_uri=${redirectPath}&scope=${params.scope}&response_type=token`;
-      //console.log(url);
       window.location.href = url;
     }
   }
 }
 </script>
+
+<style>
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+</style>
+
 
 <style scoped>
 
@@ -211,5 +267,4 @@ select {
   font-size: 16px;
   outline: none;
 }
-
 </style>

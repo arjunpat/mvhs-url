@@ -82,6 +82,7 @@ export default {
 .code {
   background: #ddd;
   display: inline-block;
-  padding: 6px 10px;
+  padding: 6px 8px;
+  border-radius: 4px;
 }
 </style>

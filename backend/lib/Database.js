@@ -45,7 +45,7 @@ class Database {
 		});
 	}
 
-	getUrlByShortened(shortened) {
+	getLatestUrlByShortened(shortened) {
 		return this.query('SELECT * FROM urls WHERE shortened = ? ORDER BY created_time DESC LIMIT 1', [ shortened ]).then(results => {
 			if (results.length !== 1) return false;
 			
