@@ -23,7 +23,6 @@
 
 <script>
 import { serverHost } from '@/constants';
-import { getCookie } from '@/utils.js';
 import Url from '@/views/components/Url.vue';
 
 export default {
@@ -40,17 +39,10 @@ export default {
     window.fetch(`${serverHost}/api/account-urls`, {
       credentials: 'include',
     }).then(res => res.json()).then(val => {
-      // setTimeout(() => {
-        this.urlsToShow = val.data.sort((a, b) => b.created_time - a.created_time);
+      this.urlsToShow = val.data.sort((a, b) => b.created_time - a.created_time);
 
-        this.isLoading = false;
-      // }, 1000);
+      this.isLoading = false;
     });
-  },
-  beforeCreate() {
-    if (!getCookie('mvhs_url')) {
-      this.$router.push({ path: '/' });
-    }
   }
 }
 </script>

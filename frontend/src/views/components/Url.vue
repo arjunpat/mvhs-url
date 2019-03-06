@@ -45,7 +45,7 @@ export default {
   },
   computed: {
     shortened() {
-      let shortened = 'url.mvhs.io/u/' + this.url.shortened;
+      let shortened = 'url.mvhs.io/' + this.url.shortened;
 
       return shortened;
     },
@@ -56,10 +56,7 @@ export default {
         return origin + '/expired?shortened=' + encodeURIComponent(this.url.shortened);
       }
 
-      if (origin.includes('localhost'))
-        origin = 'http://localhost:8000';
-
-      return origin + '/u/' + this.url.shortened;
+      return origin + '/' + this.url.shortened;
     },
     redirectsTo() {
       let redirectsTo = this.url.redirects_to;

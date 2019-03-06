@@ -9,7 +9,7 @@
         <router-link to="/account">My Account</router-link>
         <router-link v-if="isAdmin" to="/admin">Admin</router-link>
         <router-link to="/logout">Logout</router-link>
-        <img @click="logout()" id="profile-pic" v-show="profile_pic" :src="profile_pic">
+        <img id="profile-pic" v-show="profile_pic" :src="profile_pic">
       </div>
     </div>
     <router-view/>
@@ -18,6 +18,7 @@
 
 <script>
 import { serverHost } from '@/constants';
+import { getCookie } from '@/utils';
 
 export default {
   data() {
@@ -26,19 +27,73 @@ export default {
       isAdmin: false
     }
   },
-  mounted() {
-    setTimeout(() => {
-      window.fetch(`${serverHost}/api/profile`, {
-        credentials: 'include'
-      }).then(res => res.json()).then(res => {
-        this.profile_pic = res.data.profile_pic;
-        this.isAdmin = res.data.isAdmin;
-      });
-    }, 1000);
-  },
   methods: {
-    logout() {
+    loadProfile() {
+      setTimeout(() => {
+        if (!getCookie('mvhs_url'))
+          return this.loadProfile();
 
+        window.fetch(`${serverHost}/api/profile`, {
+          credentials: 'include'
+        }).then(res => res.json()).then(res => {
+          this.profile_pic = res.data.profile_pic;
+          this.isAdmin = res.data.isAdmin;
+        });
+      }, 1000);
+    }
+  },
+  mounted() {
+    this.loadProfile();
+  },
+  beforeCreate() {
+    if (getCookie('mvhs_url')) {
+      return;
+    }
+
+    this.loggingIn = true;
+
+    let accessTokenLocation = window.location.href.indexOf('access_token=');
+
+    if (accessTokenLocation > -1) {
+      let accessToken = window.location.href.substring(accessTokenLocation + 13);
+
+      while (accessToken.includes('&')) {
+        accessToken = accessToken.substring(0, accessToken.indexOf('&'));
+      }
+
+      window.fetch(`${serverHost}/api/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          accessToken
+        })
+      }).then(res => res.json()).then(res => {
+
+        if (window.location.href.includes('localhost')) {
+          document.cookie = `mvhs_url=${res.data.token}; Max-Age=2592000`;
+        }
+
+        window.history.replaceState({}, '', '/');
+
+        this.$router.push({
+          path: '/'
+        });
+      });
+
+    } else {
+      let redirectPath = encodeURIComponent(window.location.protocol + '//' + window.location.host + window.location.pathname.split('/').slice(0, -1).join('/') + '/oauth');
+
+      let params = {
+        client_id: '740436136559-n3qoo8kanof8cs8gqpl0s8g8qvohr8ta.apps.googleusercontent.com',
+        redirect_uri: redirectPath,
+        scope: encodeURIComponent('profile email')
+      }
+
+      let url = `https://accounts.google.com/o/oauth2/auth?client_id=${params.client_id}&redirect_uri=${redirectPath}&scope=${params.scope}&response_type=token`;
+      window.location.href = url;
     }
   }
 }

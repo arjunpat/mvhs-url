@@ -12,7 +12,7 @@ import Logout from './views/Logout.vue';
 Vue.use(Router);
 
 let router = new Router({
-  mode: 'history',
+  /* mode: 'history', */
   routes: [
     {
       path: '/',

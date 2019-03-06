@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="title">url.mvhs.io/u/{{ url.shortened }}</span>
+    <span class="title">url.mvhs.io/{{ url.shortened }}</span>
     <div style="padding: 20px;">
       <p v-if="url.expired" style="background: #ddd; color: #ff0000; display: inline-block; padding: 6px 10px; margin-bottom: 20px; font-weight: bold; border-radius: 4px;">This shortened URL has already expired and may now be in use by another user</p>
       <div v-if="!url.expired" style="margin-bottom: 10px;">
@@ -59,9 +59,9 @@ export default {
     },
     cancel() {
 
-      let question = prompt(`To confirm you want to delete this, type url.mvhs.io/u/${this.url.shortened} below:`);
+      let question = prompt(`To confirm you want to delete this, type url.mvhs.io/${this.url.shortened} below:`);
 
-      if (question !== 'url.mvhs.io/u/' + this.url.shortened)
+      if (question !== 'url.mvhs.io/' + this.url.shortened)
         return;
 
       window.fetch(`${serverHost}/api/cancel`,{

@@ -8,7 +8,7 @@
       <div style="padding: 20px;">
         <div v-show="!success">{{ error }}</div>
         <div v-show="success">
-          <span><span class="code">url.mvhs.io/u/{{ this.data.shortened }}</span> now redirects to <span class="code">{{ this.data.redirects_to }}</span></span>
+          <span><span class="code">url.mvhs.io/{{ this.data.shortened }}</span> now redirects to <span class="code">{{ this.data.redirects_to }}</span></span>
         </div>
       </div>
     </div>

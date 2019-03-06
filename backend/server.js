@@ -42,11 +42,14 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/u', urlHandler);
 app.use('/api', api);
 app.use('/api/admin', adminApi);
 app.use('/', express.static('public'));
+app.get('/oauth', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
 
+app.use('/', urlHandler);
 app.all('*', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });

@@ -5,7 +5,7 @@
         <span style="font-family: 'Product Sans'; font-size: 50px; font-weight: bold;">Simplify your links</span>
         <br>
         <br>
-        <span style="font-size: 20px;">url.mvhs.io/u/&nbsp;</span>
+        <span style="font-size: 20px;">url.mvhs.io/&nbsp;</span>
         <input style="width: 30%; padding-left: 4px;" type="text" placeholder="Anything you choose" v-model="shortened">
         <i class="material-icons"
           style="font-size: 36px; margin-left: 8px; vertical-align: middle;"
@@ -57,7 +57,6 @@
 <script>
 // @ is an alias to /src
 import { serverHost } from '@/constants';
-import { getCookie } from '@/utils';
 
 export default {
   data() {
@@ -103,6 +102,7 @@ export default {
   },
   watch: {
     shortened() {
+      this.shortened = this.shortened.replace(/ /g, '-');
       let current = this.shortened;
       if (current === '' || !/^[A-Za-z0-9-_.]+$/g.test(current)) {
         this.availability = 'block';
@@ -145,50 +145,6 @@ export default {
 		}
 
 		this.initRecaptcha();
-  },
-  beforeCreate() {
-    if (getCookie('mvhs_url')) {
-      return;
-    }
-
-    function getHashValue(key) {
-      let matches = window.location.hash.match(new RegExp(key + '=([^&]*)'));
-      return matches ? matches[1] : null;
-    }
-
-    let accessToken = getHashValue('access_token');
-
-    if (accessToken) {
-      console.log(accessToken);
-
-      window.fetch(`${serverHost}/api/login`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          accessToken
-        })
-      }).then(res => res.json()).then(res => {
-
-        if (window.location.href.includes('localhost')) {
-          document.cookie = `mvhs_url=${res.data.token}; Max-Age=2592000`;
-        }
-      });
-
-    } else {
-      let redirectPath = encodeURIComponent(window.location.protocol + '//' + window.location.host + window.location.pathname.split('/').slice(0, -1).join('/'));
-
-      let params = {
-        client_id: '740436136559-n3qoo8kanof8cs8gqpl0s8g8qvohr8ta.apps.googleusercontent.com',
-        redirect_uri: redirectPath,
-        scope: encodeURIComponent('profile email')
-      }
-
-      let url = `https://accounts.google.com/o/oauth2/auth?client_id=${params.client_id}&redirect_uri=${redirectPath}&scope=${params.scope}&response_type=token`;
-      window.location.href = url;
-    }
   }
 }
 </script>
