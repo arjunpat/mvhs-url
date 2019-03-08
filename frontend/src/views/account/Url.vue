@@ -93,7 +93,7 @@ export default {
       let hitsByDay = this.url.hitsByDay;
       let labels = [];
 
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i <= 7; i++) {
         let d = new Date(Date.now() + ((i - 7) * 86400000));
         labels.push(d.toISOString().split('T')[0]);
       }

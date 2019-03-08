@@ -51,7 +51,7 @@ app.get('/oauth', (req, res) => {
 
 app.use('/', urlHandler);
 app.all('*', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.redirect(302, '/#/not-found');
 });
 
 app.listen(process.env.PORT, () => {

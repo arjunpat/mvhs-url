@@ -139,6 +139,7 @@ html, body {
   color: #333;
   display: inline-block;
   padding: 12px 16px;
+  border-radius: 6px;
 }
 
 #nav-links > a:hover {

@@ -8,6 +8,7 @@ import AccountUrl from './views/account/Url.vue';
 import AdminHome from './views/admin/Home.vue';
 import Expired from './views/Expired.vue';
 import Logout from './views/Logout.vue';
+import NotFound from './views/NotFound.vue';
 
 Vue.use(Router);
 
@@ -76,6 +77,14 @@ let router = new Router({
       component: AccountUrl,
       meta: {
         title: 'URL - MVHS URL Shortener'
+      }
+    },
+    {
+      path: '/not-found',
+      name: 'not-found',
+      component: NotFound,
+      meta: {
+        title: 'Not Found - MVHS URL Shortener'
       }
     }
   ]
