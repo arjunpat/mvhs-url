@@ -9,6 +9,7 @@ import AdminHome from './views/admin/Home.vue';
 import Expired from './views/Expired.vue';
 import Logout from './views/Logout.vue';
 import NotFound from './views/NotFound.vue';
+import SeniorPortal from './views/SeniorPortal.vue';
 
 Vue.use(Router);
 
@@ -85,6 +86,14 @@ let router = new Router({
       component: NotFound,
       meta: {
         title: 'Not Found - MVHS URL Shortener'
+      }
+    },
+    {
+      path: '/senior-portal',
+      name: 'senior-portal',
+      component: SeniorPortal,
+      meta: {
+        title: 'Senior Portal - MVHS URL Shortener'
       }
     }
   ]

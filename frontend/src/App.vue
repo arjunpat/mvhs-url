@@ -8,6 +8,7 @@
         <router-link to="/">Home</router-link>
         <router-link to="/account">My Account</router-link>
         <router-link v-if="isAdmin" to="/admin">Admin</router-link>
+        <router-link v-if="isSenior" to="/senior-portal">Senior Portal</router-link>
         <router-link to="/logout">Logout</router-link>
         <img id="profile-pic" v-show="profile_pic" :src="profile_pic">
       </div>
@@ -24,7 +25,8 @@ export default {
   data() {
     return {
       profile_pic: '',
-      isAdmin: false
+      isAdmin: false,
+      isSenior: false
     }
   },
   methods: {
@@ -38,6 +40,7 @@ export default {
         }).then(res => res.json()).then(res => {
           this.profile_pic = res.data.profile_pic;
           this.isAdmin = res.data.isAdmin;
+          this.isSenior = !!res.data.isSenior;
         });
       }, 1000);
     }

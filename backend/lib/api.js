@@ -195,7 +195,10 @@ router.get('/profile', async (req, res) => {
     last_name: profile.last_name,
     profile_pic: profile.profile_pic,
     email: profile.email,
-    isAdmin: adminEmails.includes(email)
+    isAdmin: adminEmails.includes(email),
+    isSenior: (() => {
+      return profile.email.length === 18 && seniorInformation[profile.email.substring(0, 9)];
+    })()
   }));
 });
 
@@ -293,6 +296,18 @@ router.post('/availability', async (req, res) => {
     availability: 'available'
   }));
 });
+
+
+/* temp */
+const getSeniorInformation = require('./get-senior-information');
+let seniorInformation = {};
+getSeniorInformation().then(data => {
+  seniorInformation = data;
+});
+
+setTimeout(async () => {
+  seniorInformation = await getSeniorInformation();
+}, 3 * 60 * 1000);
 
 module.exports = (a, b, c) => {
   httpToken = a;
