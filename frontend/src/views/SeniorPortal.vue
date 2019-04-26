@@ -17,10 +17,10 @@
       <span v-if="seniorInfo[7] === ''" style="color: red;">
         You have one or more items missing from the <span style="font-weight:bold;">Finance Office</span><br>
       </span>
-      <span v-if="seniorInfo[8] === 'x'" style="color: red;">
+      <span v-if="seniorInfo[8] !== ''" style="color: red;">
         You are <span style="font-weight:bold;">in danger of failing</span> one or more classes<br>
       </span>
-      <span v-if="seniorInfo[4] !== '' && seniorInfo[5] !== '' && seniorInfo[6] !== '' && seniorInfo[7] !== '' && seniorInfo[8] === ''" style="color: green;">
+      <span v-if="seniorInfo[4] !== '' && seniorInfo[5] !== '' && seniorInfo[6] !== '' && seniorInfo[7] !== '' && seniorInfo[8] === ''" style="color: green; font-weight: bold; font-size: 24px;">
         You're all checked out!<br>
       </span>
     </div>

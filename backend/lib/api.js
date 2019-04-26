@@ -305,9 +305,9 @@ getSeniorInformation().then(data => {
   seniorInformation = data;
 });
 
-setTimeout(async () => {
+setInterval(async () => {
   seniorInformation = await getSeniorInformation();
-}, 3 * 60 * 1000);
+}, 20 * 1000);
 
 module.exports = (a, b, c) => {
   httpToken = a;

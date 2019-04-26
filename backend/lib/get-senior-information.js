@@ -1,18 +1,15 @@
 const fetch = require('node-fetch');
 
 module.exports = async () => {
-    let res = await fetch();
-    res = await res.text();
+    let res = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1H1kVNidtWjO9ytxCcpzFnM6AaCkJ2YsNKQ-EnjTnQeU/values/Sheet1?key=' + process.env.SHEETS_API_KEY);
+    res = await res.json();
+    res = res.values;
 
     let data = {};
 
     console.time('parse-time');
 
-    res = res.split('\n');
-
     for (let i = 0; i < res.length; i++) {
-        // splits each line/person by all of the commas
-        res[i] = res[i].split(',');
 
         // loops through all the data in arr and trims it
         for (let j = 0; j < res[i].length; j++) {
