@@ -2,7 +2,7 @@
   <div>
     <span class="title">Senior Portal</span>
     <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
-      <span style="font-size: 28px; font-weight: bold;">Hello {{ first_name }},</span>
+      <span style="font-size: 28px; font-weight: bold;">Hello {{ first_name }} {{ last_name }},</span>
       <br><br>
       <span>Grade: {{ seniorInfo[9] }}</span><br>
       <span v-if="seniorInfo[4] === ''" style="color: red;">
@@ -43,6 +43,7 @@ export default {
         credentials: 'include'
       }).then(res => res.json()).then(res => {
         this.first_name = res.data.first_name;
+        this.last_name = res.data.last_name;
         this.seniorInfo = res.data.isSenior;
       });
     }
