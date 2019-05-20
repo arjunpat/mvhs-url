@@ -41,6 +41,8 @@ export default {
           this.profile_pic = res.data.profile_pic;
           this.isAdmin = res.data.isAdmin;
           this.isSenior = !!res.data.isSenior;
+
+          window.profile = res;
         });
       }, 1000);
     }
