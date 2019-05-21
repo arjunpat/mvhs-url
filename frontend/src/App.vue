@@ -160,4 +160,10 @@ html, body {
   transition: .2s ease all;
 }
 
+@media only screen and (max-width: 400px) {
+  #profile-pic {
+    display: none;
+  }
+}
+
 </style>

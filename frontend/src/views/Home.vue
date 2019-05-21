@@ -193,6 +193,19 @@ export default {
   max-width: 700px;
 }
 
+@media only screen and (max-width: 400px) {
+  #url-maker > div {
+    max-width: 70%;
+  }
+  #url-maker > div > input {
+    width: 60%;
+    margin-left: 10px;
+  }
+  #url-maker > div > span {
+    width: 70%;
+  }
+}
+
 #url-maker > div > input:focus {
   box-shadow: 2px 3px 1px -1px rgba(0,0,0,0.1), 0 1px 1px 0 rgba(0,0,0,0.07), 0 1px 3px 0 rgba(0,0,0,0.06);
 }

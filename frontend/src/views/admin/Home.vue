@@ -22,7 +22,7 @@
       <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
         <span style="font-weight: bold; font-size: 22px;">All Accounts</span>
         <br><br>
-        <table style="width: 100%;">
+        <!-- <table style="width: 100%;">
           <tr style="border-bottom: 1px solid #ccc;">
             <th>Email</th>
             <th>Name</th>
@@ -37,7 +37,28 @@
             <td>{{ user.__url_amount }}</td>
             <td style="color: blue; cursor: pointer;" @click="() => suspendUser(user)">{{ user.is_suspended ? 'Unsuspend' : 'Suspend' }}</td>
           </tr>
-        </table>
+        </table> -->
+        <div>
+          <span>Enable or suspend an account</span><br>
+          <input placeholder="Email" v-model="emailToSuspend" style="padding: 10px; width: 200px;"><button style="padding: 10px;" @click="suspendUser(users.filter(u => u.email === emailToSuspend)[0])">Toggle Account Suspension</button>
+        </div>
+        <br><br>
+        <hot-table
+          :data="users"
+          :colHeaders="['Profile Picture', 'Name', 'Email', 'Creation', '# of URLs', 'Is Active']"
+          licenseKey="non-commercial-and-evaluation"
+          :editor="false"
+          :columnSorting="true"
+          height="300"
+          :columns="[
+            {data: '__pic', renderer: 'html'},
+            {data: '__name'},
+            {data: 'email'},
+            {data: '__time'},
+            {data: '__url_amount'},
+            {data: '__suspend'},
+          ]"
+        ></hot-table>
       </div>
     </div>
 </template>
@@ -45,15 +66,18 @@
 <script>
 import { serverHost } from '@/constants';
 import Url from '@/views/components/Url.vue';
+import { HotTable } from '@handsontable/vue';
 
 export default {
   components: {
-    Url
+    Url,
+    HotTable
   },
   data() {
     return {
       users: [],
-      urls: []
+      urls: [],
+      emailToSuspend: ''
     }
   },
   mounted() {
@@ -68,7 +92,12 @@ export default {
         this.users = val.data.users.sort((a, b) => b.created_time - a.created_time);
         this.users.forEach(user => {
           user.__url_amount = this.urls.filter(u => u.registered_to === user.email).length;
+          user.__name = user.first_name + ' ' + user.last_name;
+          user.__pic = `<div style="background-image: url(${user.profile_pic}); background-size: 30px 30px; background-repeat: no-repeat; background-position: center; width: 30px; height: 30px; margin: 0 auto;"></div>`;
+          user.__time = this.dateToString(user.created_time);
+          user.__suspend = !user.is_suspended;
         });
+
         this.isLoading = false;
       });
     },
@@ -91,6 +120,11 @@ export default {
       });
     },
     suspendUser(user) {
+      this.emailToSuspend = '';
+      if (!user) {
+        return alert('No user with this email found');
+      }
+
       if (!user.is_suspended && (!confirm('Are you sure you want to suspend this account?') || !confirm(user.email + ' will no longer be able to create new urls?'))) {
         return;
       }
@@ -112,6 +146,7 @@ export default {
 
 
 <style scoped>
+@import '~handsontable/dist/handsontable.full.css';
 
 .title {
   background: #fccb0b;

@@ -11,8 +11,6 @@
       <span>Short ID Number: {{ seniorInfo[0] }}</span><br>
       <span>Email: {{ seniorInfo[3] }}</span><br>
       <br>
-      <button style="padding: 15px;">Click here to refresh this information</button>
-      <br><br>
       <span v-if="seniorInfo[4] === ''" style="color: red;">
         You have one or more items missing from the <span style="font-weight:bold;">College &amp; Career Center</span><br>
       </span>
@@ -32,6 +30,8 @@
         You're all checked out! Please report to the "EXPRESS CHECK-OUT" line at the theater steps to collect your cap and gown on Senior Check-out day.<br>
       </span>
       <br><br>
+      <button style="padding: 0 16px; background: rgb(252, 203, 11); color: #000; font-size: 14px; border: none; height: 36px; font-family: 'Product Sans', Roboto, sans-serif; cursor: pointer; border-radius: 4px; outline: none;" @click="reloadData()">Click here to refresh this information</button>
+      <br><br>
       <span style="font-style: italic;">Our servers grab the latest data every thirty seconds. Hold tight if you aren't seeing a change immediately, and click the button above to see changes come through.</span>
     </div>
   </div>
@@ -45,7 +45,8 @@ export default {
     return {
       first_name: '',
       last_name: '',
-      seniorInfo: {}
+      seniorInfo: {},
+      lastData: Date.now()
     }
   },
   methods: {
@@ -59,10 +60,25 @@ export default {
         }
 
         this.seniorInfo = window.profile.data.isSenior;
+        this.lastData = Date.now();
       } else {
         setTimeout(() => {
           this.loadProfile();        
         }, 1000);
+      }
+    },
+    reloadData() {
+      this.first_name = undefined;
+      if (Date.now() - this.lastData > 30 * 1000) {
+        window.fetch(`${serverHost}/api/profile`, {
+          credentials: 'include'
+        }).then(res => res.json()).then(res => {
+          window.profile = res;
+          this.loadProfile();
+        });
+      } else {
+        alert('Our servers grab the latest data every thirty seconds. Hold tight if you aren\'t seeing a change immediately');
+        setTimeout(() => this.loadProfile(), 1000);
       }
     }
   },
