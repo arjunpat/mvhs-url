@@ -5,11 +5,11 @@ import Home from './views/Home.vue';
 import CreateUrl from './views/CreateUrl.vue';
 import AccountHome from './views/account/Home.vue';
 import AccountUrl from './views/account/Url.vue';
-import AdminHome from './views/admin/Home.vue';
 import Expired from './views/Expired.vue';
 import Logout from './views/Logout.vue';
 import NotFound from './views/NotFound.vue';
-import SeniorPortal from './views/SeniorPortal.vue';
+const AdminHome = () => import('./views/admin/Home.vue');
+const SeniorPortal = () => import('./views/SeniorPortal.vue');
 
 Vue.use(Router);
 

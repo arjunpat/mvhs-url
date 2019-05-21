@@ -66,12 +66,11 @@
 <script>
 import { serverHost } from '@/constants';
 import Url from '@/views/components/Url.vue';
-import { HotTable } from '@handsontable/vue';
 
 export default {
   components: {
     Url,
-    HotTable
+    HotTable: () => import('@handsontable/vue').then(({ HotTable }) => HotTable)
   },
   data() {
     return {

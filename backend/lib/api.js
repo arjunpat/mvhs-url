@@ -197,7 +197,7 @@ router.get('/profile', async (req, res) => {
     email: profile.email,
     isAdmin: adminEmails.includes(email),
     isSenior: (() => {
-      return profile.email.length === 18 && seniorInformation[profile.email.substring(0, 9)];
+      return seniorInformation[profile.email.substring(0, profile.email.indexOf('@'))] || false;
     })()
   }));
 });
@@ -307,7 +307,7 @@ getSeniorInformation().then(data => {
 
 setInterval(async () => {
   seniorInformation = await getSeniorInformation();
-}, 20 * 1000);
+}, 30 * 1000 * 60);
 
 module.exports = (a, b, c) => {
   httpToken = a;
