@@ -1,0 +1,17 @@
+.main-button {
+    padding: 0 16px;
+    background: rgb(252, 203, 11);
+    color: #000;
+    font-size: 14px;
+    border: none;
+    height: 36px;
+    font-family: 'Product Sans', Roboto, sans-serif;
+    cursor: pointer;
+    border-radius: 4px;
+    outline: none;
+}
+
+.main-button:hover {
+    box-shadow: 0 1px 1px 0 rgba(252,203,11,.45), 0 1px 3px 1px rgba(252,203,11,.3);
+    background: #ffd014;
+}

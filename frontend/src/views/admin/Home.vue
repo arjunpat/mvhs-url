@@ -1,12 +1,43 @@
 <template>
     <div>
       <span class="title">Admin Portal</span>
-      <!-- <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
+      <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
+        <span style="font-weight: bold; font-size: 22px;">All Accounts</span>
+        <br><br>
+        <div>
+          <span>Enable or suspend an account</span><br>
+          <input placeholder="Email" v-model="emailToSuspend" style="padding: 10px; width: 200px;">
+          <button style="padding: 10px;" class="main-button" @click="suspendUser(users.filter(u => u.email === emailToSuspend)[0])">Toggle Account Suspension</button>
+        </div>
+        <br>
+        <span>Number of accounts: {{ users.length }}</span>
+        <br><br>
+        <hot-table
+          :data="users"
+          :colHeaders="['Profile Picture', 'Name', 'Email', 'Creation', '# of URLs', 'Is Active']"
+          :editor="false"
+          :columnSorting="true"
+          :dropdownMenu="true"
+          :filters="true"
+          :columns="[
+            {data: '__pic', renderer: 'html'},
+            {data: '__name'},
+            {data: 'email'},
+            {data: '__time'},
+            {data: '__url_amount'},
+            {data: '__suspend'},
+          ]"
+          height="300"
+          stretchH="all"
+          licenseKey="non-commercial-and-evaluation"
+        ></hot-table>
+      </div>
+      <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
         <span style="font-weight: bold; font-size: 22px;">All Shortened URLs</span>
         <br>
         <span style="color: red; font-size: 14px;">Red signifies an expired URL</span>
         <br><br>
-        <table style="width: 100%;">
+        <!-- <table style="width: 100%;">
           <tr style="border-bottom: 1px solid #ccc;">
             <th>Shortened</th>
             <th>Redirects To</th>
@@ -17,54 +48,32 @@
             <th>More</th>
           </tr>
           <Url v-for="url of urls" :key="url.id" v-bind:url="url"></Url>
-        </table>
-      </div> -->
-      <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
-        <span style="font-weight: bold; font-size: 22px;">All Accounts</span>
-        <br><br>
-        <!-- <table style="width: 100%;">
-          <tr style="border-bottom: 1px solid #ccc;">
-            <th>Email</th>
-            <th>Name</th>
-            <th>Created account</th>
-            <th>Amount of URLs</th>
-            <th>Suspend account</th>
-          </tr>
-          <tr v-for="user of users" :key="user.email">
-            <td>{{ user.email }}</td>
-            <td>{{ user.first_name + ' ' + user.last_name }}</td>
-            <td>{{ dateToString(user.created_time) }}</td>
-            <td>{{ user.__url_amount }}</td>
-            <td style="color: blue; cursor: pointer;" @click="() => suspendUser(user)">{{ user.is_suspended ? 'Unsuspend' : 'Suspend' }}</td>
-          </tr>
         </table> -->
-        <div>
-          <span>Enable or suspend an account</span><br>
-          <input placeholder="Email" v-model="emailToSuspend" style="padding: 10px; width: 200px;"><button style="padding: 10px;" @click="suspendUser(users.filter(u => u.email === emailToSuspend)[0])">Toggle Account Suspension</button>
-        </div>
-        <br><br>
         <hot-table
-          :data="users"
-          :colHeaders="['Profile Picture', 'Name', 'Email', 'Creation', '# of URLs', 'Is Active']"
-          licenseKey="non-commercial-and-evaluation"
+          :data="urls"
+          :colHeaders="['Shortened', 'Redirects To', 'Created', 'Expires', 'User', 'More']"
           :editor="false"
           :columnSorting="true"
-          height="300"
+          :dropdownMenu="true"
+          :filters="true"
           :columns="[
-            {data: '__pic', renderer: 'html'},
-            {data: '__name'},
-            {data: 'email'},
-            {data: '__time'},
-            {data: '__url_amount'},
-            {data: '__suspend'},
+            {data: '__shortened', renderer: 'html'},
+            {data: '__redirects_to'},
+            {data: '__created_time'},
+            {data: '__expires', renderer: 'html'},
+            {data: 'registered_to'},
+            {data: '__more', renderer: 'html'}
           ]"
+          licenseKey="non-commercial-and-evaluation"
+          height="300"
+          stretchH="all"
         ></hot-table>
       </div>
     </div>
 </template>
 
 <script>
-import { serverHost } from '@/constants';
+import { serverHost, dateToString } from '@/constants';
 import Url from '@/views/components/Url.vue';
 
 export default {
@@ -83,11 +92,29 @@ export default {
     this.init();
   },
   methods: {
+    dateToString,
     init() {
       window.fetch(`${serverHost}/api/admin/all`, {
         credentials: 'include',
       }).then(res => res.json()).then(val => {
         this.urls = val.data.urls.sort((a, b) => b.created_time - a.created_time);
+        this.urls.forEach(url => {
+          url.__shortened = `<a href="/${url.shortened}" target="_blank">url.mvhs.io/${url.shortened}</a>`;
+          url.__redirects_to = url.redirects_to.length > 25 ? url.redirects_to.substring(0, 25) + '...' : url.redirects_to;
+          url.__created_time = this.dateToString(url.created_time);
+
+          if (url.expires) {
+            url.__expires = this.dateToString(url.expires);
+            if (url.expires < Date.now()) {
+              url.__expires = `<div style="color: #ff0000;">${url.__expires}</div>`;
+            }
+          } else {
+            url.__expires = 'Never';
+          }
+
+          url.__more = `<!-- ${url.id} --><a href="/#/account/url/${url.id}" target="_blank">More</a>`;
+        });
+
         this.users = val.data.users.sort((a, b) => b.created_time - a.created_time);
         this.users.forEach(user => {
           user.__url_amount = this.urls.filter(u => u.registered_to === user.email).length;
@@ -143,7 +170,7 @@ export default {
 }
 </script>
 
-
+<style scoped src="@/assets/css/main.css"></style>
 <style scoped>
 @import '~handsontable/dist/handsontable.full.css';
 
@@ -169,5 +196,4 @@ td {
   text-align: left;
   padding: 12px 4px;
 }
-
 </style>

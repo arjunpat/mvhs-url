@@ -15,7 +15,7 @@ module.exports = async () => {
         let key = res[i][0];
 
         // adds to the gobal array var
-        data[key] = res[i].splice(1);
+        data[key] = res[i];
     }
 
     console.timeEnd('parse-time');

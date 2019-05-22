@@ -18,30 +18,15 @@
 </template>
 
 <script>
+import { dateToString } from '@/constants';
+
 export default {
   props: ['url'],
   created() {
     this.url.expired = !(this.url.expires > Date.now() || this.url.expires === null);
   },
   methods: {
-    dateToString(date) {
-      let now = Date.now();
-
-      let distance = Date.now() - date;
-
-      if (3600000 > distance && distance > 0) {
-        return Math.round(distance / 60000) + ' minutes ago';
-      } else if (86400000 > distance && distance > 0) {
-        return Math.round((now - date) / 3600000) + ' hours ago';
-      }
-
-      return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        timeZone: 'America/Los_Angeles'
-      });
-    }
+    dateToString
   },
   computed: {
     shortened() {
