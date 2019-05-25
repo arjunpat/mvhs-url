@@ -1,4 +1,4 @@
-export const serverHost = 'http://localhost:8080';
+export const serverHost = process.env.NODE_ENV === 'production' ? 'https://url.mvhs.io'  : 'http://localhost:8080';
 
 export function dateToString(date) {
   let now = Date.now();

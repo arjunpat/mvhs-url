@@ -97,7 +97,7 @@ export default {
       window.fetch(`${serverHost}/api/admin/all`, {
         credentials: 'include',
       }).then(res => res.json()).then(val => {
-        this.urls = val.data.urls.sort((a, b) => b.created_time - a.created_time);
+        this.urls = val.data.urls.filter(u => u.registered_to !== 'ajpat1234@gmail.com').sort((a, b) => b.created_time - a.created_time);
         this.urls.forEach(url => {
           url.__shortened = `<a href="/${url.shortened}" target="_blank">url.mvhs.io/${url.shortened}</a>`;
           url.__redirects_to = url.redirects_to.length > 25 ? url.redirects_to.substring(0, 25) + '...' : url.redirects_to;
