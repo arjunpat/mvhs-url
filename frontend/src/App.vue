@@ -9,11 +9,16 @@
         <router-link to="/account">My Account</router-link>
         <router-link v-if="isAdmin" to="/admin">Admin</router-link>
         <router-link v-if="isSenior" to="/senior-portal">Senior Portal</router-link>
-        <router-link to="/logout">Logout</router-link>
+        <a @click="logout">Logout</a>
         <img id="profile-pic" v-show="profile_pic" :src="profile_pic">
       </div>
     </div>
-    <router-view/>
+    <router-view v-if="isMVLA"/>
+    <div v-if="!isMVLA" style="padding: 20px;">
+      <h1>This application is intended for use by MVLA students only.</h1>
+      <br>
+      <h2>Please sign out and log in with your MVLA account.<br><br>If you are having difficulty logging out of this application, open google.com, sign into your MVLA account there, and then try to logout of this application.</h2>
+    </div>
   </div>
 </template>
 
@@ -26,7 +31,8 @@ export default {
     return {
       profile_pic: '',
       isAdmin: false,
-      isSenior: false
+      isSenior: false,
+      isMVLA: true
     }
   },
   methods: {
@@ -42,9 +48,19 @@ export default {
           this.isAdmin = res.data.isAdmin;
           this.isSenior = !!res.data.isSenior;
 
+          this.isMVLA = !!res.data.email.includes('@mvla.net');
+
           window.profile = res;
         });
       }, 1000);
+    },
+    logout() {
+      window.fetch(`${serverHost}/api/logout`, {
+        credentials: 'include'
+      }).then(res => res.json).then(res => {
+        document.cookie = 'mvhs_url=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+        window.location.href = '/';
+      });
     }
   },
   mounted() {
@@ -106,7 +122,6 @@ export default {
 
 
 <style>
-
 * {
   padding: 0;
   margin: 0;
@@ -116,11 +131,9 @@ export default {
 html, body {
   height: 100%;
 }
-
 </style>
 
 <style scoped>
-
 #title {
   padding: 20px;
   display: inline-block;

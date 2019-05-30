@@ -6,7 +6,6 @@ import CreateUrl from './views/CreateUrl.vue';
 import AccountHome from './views/account/Home.vue';
 import AccountUrl from './views/account/Url.vue';
 import Expired from './views/Expired.vue';
-import Logout from './views/Logout.vue';
 import NotFound from './views/NotFound.vue';
 const AdminHome = () => import('./views/admin/Home.vue');
 const SeniorPortal = () => import('./views/SeniorPortal.vue');
@@ -55,14 +54,6 @@ let router = new Router({
     {
       path: '/admin',
       redirect: '/admin/home'
-    },
-    {
-      path: '/logout',
-      name: 'logout',
-      component: Logout,
-      meta: {
-        title: 'Logout - MVHS URL Shortener'
-      }
     },
     {
       path: '/expired',
