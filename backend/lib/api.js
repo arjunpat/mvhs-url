@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
   result = await result.json();
   
   if (!result.email_verified)
-    return responses.error('email_not_verified');
+    return res.send(responses.error('email_not_verified'));
   
   let profile = await database.getUserByEmail(result.email);
 
