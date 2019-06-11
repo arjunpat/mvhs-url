@@ -44,6 +44,13 @@ export default {
         window.fetch(`${serverHost}/api/profile`, {
           credentials: 'include'
         }).then(res => res.json()).then(res => {
+
+          if (!res.success) {
+            if (res.error === 'no_cookie' || res.error === 'bad_token' || res.error === 'no_account') {
+              this.logout();
+            }
+          }
+
           this.profile_pic = res.data.profile_pic;
           this.isAdmin = res.data.isAdmin;
           this.isSenior = !!res.data.isSenior;
