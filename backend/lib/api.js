@@ -139,7 +139,7 @@ router.post('/create', async (req, res) => {
   }
   
   let result = await database.createNewUrl({
-    id: generateId(30),
+    id: generateId(10),
     shortened,
     redirects_to,
     expires,
@@ -177,7 +177,7 @@ router.get('/account-urls', async (req, res) => {
       expires: result.expires,
       created_time: result.created_time,
       clicks: hits.filter(h => h.url_id === result.id).length
-    })
+    });
   }
 
   res.send(responses.success(urls));
