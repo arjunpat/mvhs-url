@@ -139,7 +139,7 @@ router.post('/create', async (req, res) => {
   }
   
   let result = await database.createNewUrl({
-    id: generateId(10),
+    id: generateId(6),
     shortened,
     redirects_to,
     expires,
