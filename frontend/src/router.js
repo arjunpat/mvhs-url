@@ -4,11 +4,8 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import CreateUrl from './views/CreateUrl.vue';
 import AccountHome from './views/account/Home.vue';
-import AccountUrl from './views/account/Url.vue';
 import Expired from './views/Expired.vue';
 import NotFound from './views/NotFound.vue';
-const AdminHome = () => import('./views/admin/Home.vue');
-const SeniorPortal = () => import('./views/SeniorPortal.vue');
 
 Vue.use(Router);
 
@@ -46,7 +43,7 @@ let router = new Router({
     {
       path: '/admin/home',
       name: 'admin-home',
-      component: AdminHome,
+      component: () => import('./views/admin/Home.vue'),
       meta: {
         title: 'Admin Home - MVHS URL Shortener'
       }
@@ -66,7 +63,7 @@ let router = new Router({
     {
       path: '/account/url/:id',
       name: 'account-url',
-      component: AccountUrl,
+      component: () => import('./views/account/Url.vue'),
       meta: {
         title: 'URL - MVHS URL Shortener'
       }
@@ -82,7 +79,7 @@ let router = new Router({
     {
       path: '/senior-portal',
       name: 'senior-portal',
-      component: SeniorPortal,
+      component: () => import('./views/SeniorPortal.vue'),
       meta: {
         title: 'Senior Portal - MVHS URL Shortener'
       }

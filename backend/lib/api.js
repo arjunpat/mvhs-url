@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 const router = require('express').Router();
 const responses = require('./responses');
 
@@ -16,27 +15,30 @@ function generateId(length) {
   return id;
 }
 
-function verifyToken(req, res) {
+function inUse(url, time) {
+  return url && (url.expires > time || url.expires === null);
+}
+
+router.all('*', (req, res, next) => {
+  if (req.originalUrl === '/api/login') {
+    return next();
+  }
+
   let token = req.cookies.mvhs_url;
 
   if (!token) {
-    res.send(responses.error('no_cookie'));
-    return false;
+    return res.send(responses.error('no_cookie'));
   }
 
   let tokenContents = httpToken.verifyAndDecrypt(token);
 
   if (!tokenContents) {
-    res.send(responses.error('bad_token'));
-    return false;
+    return res.send(responses.error('bad_token'));
   }
   
-  return tokenContents.email;
-}
-
-function inUse(url, time) {
-  return url && (url.expires > time || url.expires === null);
-}
+  req.email = tokenContents.email;
+  next();
+});
 
 router.post('/login', async (req, res) => {
   let accessToken = req.body.accessToken;
@@ -86,13 +88,7 @@ router.post('/logout', async (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
-  let email = verifyToken(req, res);
-
-  if (!email) {
-    return;
-  }
-
-  let profile = await database.getUserByEmail(email);
+  let profile = await database.getUserByEmail(req.email);
 
   if (!profile)
     return res.send(responses.error('no_account'));
@@ -144,7 +140,7 @@ router.post('/create', async (req, res) => {
     redirects_to,
     expires,
     now,
-    registered_to: email
+    registered_to: req.email
   });
 
   if (result.affectedRows === 1) {
@@ -153,44 +149,18 @@ router.post('/create', async (req, res) => {
 });
 
 router.get('/account-urls', async (req, res) => {
-  let email = verifyToken(req, res);
-
-  if (!email) {
-    return;
-  }
-
-  let profile = await database.getUserByEmail(email);
+  let profile = await database.getUserByEmail(req.email);
 
   if (!profile)
     return res.send(responses.error('no_account'));
 
-  let results = await database.getUrlsByEmail(email);
-  let hits = await database.getHitsByEmail(email);
-  let urls = [];
+  let results = await database.getUrlSummaryByEmail(req.email);
 
-  for (let i = 0; i < results.length; i++) {
-    let result = results[i];
-    urls.push({
-      id: result.id,
-      shortened: result.shortened,
-      redirects_to: result.redirects_to,
-      expires: result.expires,
-      created_time: result.created_time,
-      clicks: hits.filter(h => h.url_id === result.id).length
-    });
-  }
-
-  res.send(responses.success(urls));
+  res.send(responses.success(results));
 });
 
 router.get('/profile', async (req, res) => {
-  let email = verifyToken(req, res);
-
-  if (!email) {
-    return;
-  }
-
-  let profile = await database.getUserByEmail(email);
+  let profile = await database.getUserByEmail(req.email);
 
   if (!profile)
     return res.send(responses.error('no_account'));
@@ -200,7 +170,7 @@ router.get('/profile', async (req, res) => {
     last_name: profile.last_name,
     profile_pic: profile.profile_pic,
     email: profile.email,
-    isAdmin: adminEmails.includes(email),
+    isAdmin: adminEmails.includes(req.email),
     isSenior: (() => {
       return seniorInformation[profile.email.substring(0, profile.email.indexOf('@'))] || false;
     })()
@@ -208,68 +178,44 @@ router.get('/profile', async (req, res) => {
 });
 
 router.get('/details/:url_id', async (req, res) => {
-  let email = verifyToken(req, res); // || return;
-
-  if (!email) {
-    return;
-  }
-
   let url_id = req.params.url_id;
-  let url = await database.getUrlById(url_id);
+  let url = await database.getUrlSummaryById(url_id);
 
   if (!url) {
     return res.send(responses.error('does_not_exist'));
   }
 
-  if (!adminEmails.includes(email) && url.registered_to !== email) {
+  if (!adminEmails.includes(req.email) && url.registered_to !== req.email) {
     return res.send(responses.error('not_auth'));
   }
 
-  let hits = await database.getHitsByUrlId(url_id);
-
-  let timezoneOffsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
+  let hits = (await database.query('SELECT time FROM hits WHERE url_id = ? AND time > (SELECT time FROM hits WHERE url_id = ? ORDER BY db_id DESC LIMIT 1) - 6.048e8', [ url_id, url_id ])).map(h => h.time);
 
   let hitsByDay = {};
-  if (hits.length > 0) {
-    let oneWeekTimeFromLastHit = hits[hits.length - 1].time - 6.048e8;
-    for (let i = hits.length - 1; i >= 0; i--) {
-      let hit = hits[i];
+  let timezoneOffsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
+  let dateString;
 
-      if (hit.time < oneWeekTimeFromLastHit) {
-        break;
-      }
-      let d = new Date(hit.time - timezoneOffsetMs);
-      let dateString = d.toISOString().split('T')[0];
+  for (let i = 0; i < hits.length; i++) {
+    dateString = new Date(hits[i] - timezoneOffsetMs).toISOString().split('T')[0];
 
-      if (hitsByDay[dateString]) {
-        hitsByDay[dateString]++;
-      } else {
-        hitsByDay[dateString] = 1;
-      }
+    if (hitsByDay[dateString]) {
+      hitsByDay[dateString]++;
+    } else {
+      hitsByDay[dateString] = 1;
     }
   }
 
   res.send(responses.success({
     hitsByDay,
-    shortened: url.shortened,
-    redirects_to: url.redirects_to,
-    created_time: url.created_time,
-    expires: url.expires,
-    clicks: hits.length
+    ...url
   }));
 });
 
 router.post('/cancel', async (req, res) => {
-  let email = verifyToken(req, res); // || return;
-
-  if (!email) {
-    return;
-  }
-
   let url_id = req.body.url_id;
   let url = await database.getUrlById(url_id);
 
-  if (!adminEmails.includes(email) && url.registered_to !== email) {
+  if (!adminEmails.includes(req.email) && url.registered_to !== req.email) {
     return res.send(responses.error('not_auth'));
   }
 
@@ -283,12 +229,6 @@ router.post('/cancel', async (req, res) => {
 });
 
 router.post('/availability', async (req, res) => {
-  let email = verifyToken(req, res);
-
-  if (!email) {
-    return;
-  }
-
   let url = await database.getLatestUrlByShortened(req.body.shortened);
 
   if (inUse(url, Date.now())) {
@@ -310,9 +250,9 @@ getSeniorInformation().then(data => {
   seniorInformation = data;
 });
 
-setInterval(async () => {
+/*setInterval(async () => {
   seniorInformation = await getSeniorInformation();
-}, 30 * 1000 * 60);
+}, 30 * 1000 * 60);*/
 
 module.exports = (a, b, c) => {
   httpToken = a;

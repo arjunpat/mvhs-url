@@ -2,18 +2,26 @@
   <div>
     <span class="title">url.mvhs.io/{{ url.shortened }}</span>
     <div style="padding: 20px;">
-      <p v-if="url.expired" style="background: #ddd; color: #ff0000; display: inline-block; padding: 6px 10px; margin-bottom: 20px; font-weight: bold; border-radius: 4px;">This shortened URL has already expired and may now be in use by another user</p>
-      <div v-if="!url.expired" style="margin-bottom: 10px;">
-        <span style="display: block; font-weight: bold; font-size: 20px; margin-bottom: 4px;">Your options</span>
-        <button @click="cancel()" style="margin-left: 20px;">Cancel URL Now</button>
-        <button @click="change()" style="margin-left: 20px;">Change Link</button>
+      <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+        <div>
+          <p v-if="url.expired" style="background: #ddd; color: #ff0000; display: inline-block; padding: 6px 10px; margin-bottom: 20px; font-weight: bold; border-radius: 4px;">This shortened URL has already expired and may now be in use by another user</p>
+          <div class="info-display">
+            <p>Total clicks: {{ url.clicks }}</p>
+            <p v-if="!url.expired">Expires: {{ toDateString(this.url.expires) }}</p>
+            <p v-else>Already expired: {{ toDateString(this.url.expires) }}</p>
+            <p>Created: {{ toDateString(this.url.created_time) }}</p>
+            <p>Redirects to:</p>
+            <div><textarea :value="url.redirects_to" class="code" disabled="true"></textarea></div>
+            <div v-if="!url.expired" style="margin-top: 10px;">
+              <button @click="cancel()">Cancel URL Now</button>
+              <button @click="change()" style="margin-left: 20px;">Change Link</button>
+            </div>
+          </div>
+        </div>
+        <div style="width: 70vw;">
+          <canvas id="graph"></canvas>
+        </div>
       </div>
-      <p>Redirects to: <span class="code">{{ url.redirects_to }}</span></p>
-      <p>Total clicks: {{ url.clicks }}</p>
-      <p v-if="!url.expired">Expires: {{ toDateString(this.url.expires) }}</p>
-      <p v-else>Already expired: {{ toDateString(this.url.expires) }}</p>
-      <p>Created: {{ toDateString(this.url.created_time) }}</p>
-      <canvas id="graph"></canvas>
     </div>
   </div>
 </template>
@@ -91,10 +99,19 @@ export default {
         return;
 
       let hitsByDay = this.url.hitsByDay;
+      let datesInOrder = Object.keys(hitsByDay).sort((a, b) => {
+        if (a > b) {
+          return 1;
+        }
+        return -1;
+      });
+
       let labels = [];
+      let timezoneOffsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
+      let start = new Date(datesInOrder[datesInOrder.length - 1]).getTime();
 
       for (let i = 0; i <= 7; i++) {
-        let d = new Date(Date.now() + ((i - 7) * 86400000));
+        let d = new Date(start + ((i - 7) * 86400000));
         labels.push(d.toISOString().split('T')[0]);
       }
 
@@ -115,10 +132,19 @@ export default {
 
                 return arr;
               })(),
-              backgroundColor: '#ff0000',
-              borderColor: '#ff0000'
+              backgroundColor: 'rgba(252, 204, 11, 0.3)',
+              borderColor: '#fccb0b'
             }
           ]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
         }
       });
 
@@ -144,6 +170,13 @@ export default {
   padding: 4px 6px;
   display: inline-block;
   border-radius: 3px;
+  border: none;
+  width: calc(100% - 12px);
+  height: 40px;
+  outline: none;
+  color: black;
+  resize: none;
+  font-size: 14px;
 }
 
 button {
@@ -156,6 +189,17 @@ button {
   font-family: 'Product Sans', sans-serif;
   cursor: pointer;
   border-radius: 4px;
+}
+
+.info-display {
+  /*border: 1px solid #ccc;*/
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2);
+  padding: 16px;
+  border-radius: 6px;
+}
+
+.info-display > p {
+  font-size: 18px;
 }
 
 </style>
