@@ -90,6 +90,7 @@ td {
   margin: 2px;
   width: 70px;
   border-radius: 6px;
+  border: none;
 }
 
 .more:hover {

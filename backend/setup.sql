@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
 	last_name VARCHAR(50),
 	profile_pic VARCHAR(150),
 	created_time BIGINT UNSIGNED,
-	is_suspended BOOLEAN NOT NULL default 0,
-	INDEX (email)
+	is_suspended BOOLEAN NOT NULL default 0
 );
 CREATE TABLE IF NOT EXISTS urls (
 	id VARCHAR(30) PRIMARY KEY,
@@ -24,5 +23,8 @@ CREATE TABLE IF NOT EXISTS hits (
 	url_id VARCHAR(30),
 	ip TINYTEXT,
 	referrer TINYTEXT,
-	INDEX (url_id)
+	email VARCHAR(100),
+	INDEX (url_id),
+	INDEX (email),
+	INDEX (time)
 );

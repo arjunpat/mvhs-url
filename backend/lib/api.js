@@ -149,14 +149,23 @@ router.post('/create', async (req, res) => {
 });
 
 router.get('/account-urls', async (req, res) => {
-  let profile = await database.getUserByEmail(req.email);
-
-  if (!profile)
-    return res.send(responses.error('no_account'));
-
   let results = await database.getUrlSummaryByEmail(req.email);
 
   res.send(responses.success(results));
+});
+
+router.get('/account-history/:before', async (req, res) => {
+  let before = parseInt(req.params.before);
+
+  let results = await database.getHistoryByEmail(req.email, before);
+
+  res.send(responses.success(results));
+});
+
+router.post('/remove-history', async (req, res) => {
+  await database.removeFromHistory(req.email, parseInt(req.body.time))
+
+  res.send(responses.success());
 });
 
 router.get('/profile', async (req, res) => {
