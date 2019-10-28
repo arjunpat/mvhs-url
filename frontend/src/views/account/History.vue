@@ -14,7 +14,7 @@
             <div style="height: 3px;"></div>
             <span v-if="typeof entry.expires === 'number' && Date.now() > entry.expires">which redirected to </span>
             <span v-else>which redirects to </span>
-            <a :href="entry.redirects_to">{{ entry.redirects_to }}</a>
+            <a style="word-break: break-all;" :href="entry.redirects_to">{{ entry.redirects_to }}</a>
             <div style="height: 8px;"></div>
 
             <span style="font-size: 10px; color: #555;">
@@ -64,8 +64,6 @@ export default {
       } else {
         this.status = 'no_more';
       }
-
-      console.log(this.tableValues);
     });
   },
   methods: {
@@ -75,13 +73,7 @@ export default {
       }).then(res => res.json()).then(val => {
         this.tableValues = [...this.tableValues, ...val.data]
 
-        if (val.data.length === 5) {
-          this.status = 'are_more';
-        } else {
-          this.status = 'no_more';
-        }
-
-        console.log(this.tableValues);
+        this.status = (val.data.length === 5) ? 'are_more' : 'no_more';
       });
     },
     deleteHistory(time) {

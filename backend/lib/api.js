@@ -157,9 +157,7 @@ router.get('/account-urls', async (req, res) => {
 router.get('/account-history/:before', async (req, res) => {
   let before = parseInt(req.params.before);
 
-  let results = await database.getHistoryByEmail(req.email, before);
-
-  res.send(responses.success(results));
+  res.send(responses.success(await database.getHistoryByEmail(req.email, before)));
 });
 
 router.post('/remove-history', async (req, res) => {

@@ -6,17 +6,19 @@
       <br>
       <span style="color: red; font-size: 14px;">Red signifies an expired URL</span>
       <br><br>
-      <table style="width: 100%;">
-        <tr style="border-bottom: 1px solid #ccc;">
-          <th>Shortened</th>
-          <th>Redirects To</th>
-          <th>Created</th>
-          <th>Expires</th>
-          <th>Clicks</th>
-          <th>More</th>
-        </tr>
-        <Url v-for="url of urlsToShow" :key="url.id" v-bind:url="url"></Url>
-      </table>
+      <div class="url-container">
+        <table style="width: 100%;">
+          <tr style="border-bottom: 1px solid #ccc;">
+            <th>Shortened</th>
+            <th>Redirects To</th>
+            <th>Created</th>
+            <th>Expires</th>
+            <th>Clicks</th>
+            <th>More</th>
+          </tr>
+          <Url v-for="url of urlsToShow" :key="url.id" v-bind:url="url"></Url>
+        </table>
+      </div>
     </div>
     <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
       <span style="font-weight: bold; font-size: 22px;">Other Options</span>
@@ -116,6 +118,15 @@ th {
 .click-history:hover {
   color: #0049a8;
   background: rgb(220, 220, 220);
+}
+
+.url-container {
+  max-height: 390px;
+  overflow: scroll;
+  border: 2px solid #fccb0b;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 6px 4px 12px 1px rgba(0, 0, 0, .1);
 }
 
 </style>

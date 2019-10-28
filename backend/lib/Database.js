@@ -72,7 +72,7 @@ class Database {
       SELECT h.time, u.shortened, u.redirects_to, u.expires, a.first_name, a.last_name
       FROM hits h
         LEFT JOIN urls u ON h.url_id = u.id
-        LEFT JOIN users a on u.registered_to = a.email
+        LEFT JOIN users a ON u.registered_to = a.email
       WHERE h.email = ? AND h.time < ?
       ORDER BY h.db_id DESC LIMIT 5`, [email, before])
   }

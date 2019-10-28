@@ -3,8 +3,8 @@
     <span class="title">url.mvhs.io/{{ url.shortened }}</span>
     <div style="padding: 20px;">
       <div style="display: flex; justify-content: space-around; flex-wrap: wrap; align-items: center;">
-        <div>
-          <p v-if="url.expired" style="background: #ddd; color: #ff0000; display: inline-block; padding: 6px 10px; margin-bottom: 20px; font-weight: bold; border-radius: 4px;">This shortened URL has already expired and may now be in use by another user</p>
+        <div style="max-width: 285px;">
+          <p v-if="url.expired" style="background: #ddd; color: #ff0000; padding: 6px 10px; margin-bottom: 20px; font-weight: bold; border-radius: 4px;">This shortened URL has already expired and may now be in use by another user</p>
           <div class="info-display">
             <h1 style="display: block; margin-bottom: 6px;">Details</h1>
             <p>Total clicks: {{ url.clicks }}</p>
@@ -95,10 +95,6 @@ export default {
       });
     },
     drawChart() {
-
-      if (this.url.expired)
-        return;
-
       let hitsByDay = this.url.hitsByDay;
       let datesInOrder = Object.keys(hitsByDay).sort((a, b) => {
         if (a > b) {
