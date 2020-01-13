@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
 	email VARCHAR(100) PRIMARY KEY,
 	first_name VARCHAR(50),
 	last_name VARCHAR(50),
-	profile_pic VARCHAR(150),
+	profile_pic VARCHAR(1000),
 	created_time BIGINT UNSIGNED,
 	is_suspended BOOLEAN NOT NULL default 0
 );
