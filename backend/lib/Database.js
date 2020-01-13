@@ -56,7 +56,7 @@ class Database {
   }
 
   getUrlSummaryById(id) {
-    return this.query('SELECT shortened, redirects_to, created_time, expires, (SELECT COUNT(*) FROM hits WHERE url_id = id) as clicks FROM urls WHERE id = ?', [ id ]).then(result => {
+    return this.query('SELECT shortened, redirects_to, created_time, expires, registered_to, (SELECT COUNT(*) FROM hits WHERE url_id = id) as clicks FROM urls WHERE id = ?', [ id ]).then(result => {
       if (result.length !== 1) return false;
 
       return result[0];
