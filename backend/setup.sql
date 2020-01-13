@@ -27,4 +27,4 @@ CREATE TABLE IF NOT EXISTS hits (
 	INDEX (url_id),
 	INDEX (email),
 	INDEX (time)
-);
+)
