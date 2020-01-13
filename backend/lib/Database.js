@@ -13,7 +13,7 @@ class Database {
 
     let sql = fs.readFileSync(__dirname + '/../setup.sql').toString().split(';');
 
-    for (let i = 0; i < sql.length - 1; i++) {
+    for (let i = 0; i < sql.length; i++) {
       if (!sql[i])
         continue;
 
