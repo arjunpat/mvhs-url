@@ -18,7 +18,7 @@ function verifyToken(req, res) {
     return false;
   }
   
-  return tokenContents.email;
+  return adminEmails.includes(tokenContents.email) && tokenContents.email;
 }
 
 router.get('/all', async (req, res) => {
