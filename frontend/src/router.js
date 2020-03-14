@@ -7,6 +7,7 @@ import AccountHome from './views/account/Home.vue';
 import Expired from './views/Expired.vue';
 import NotFound from './views/NotFound.vue';
 import AccountHistory from './views/account/History.vue';
+import About from './views/About.vue';
 
 Vue.use(Router);
 
@@ -27,6 +28,13 @@ let router = new Router({
       component: CreateUrl,
       meta: {
         title: 'Create URL - MVHS URL Shortener'
+      }
+    },
+    {
+      path: '/about',
+      component: About,
+      meta: {
+        title: 'Meta - MVHS URL Shortener'
       }
     },
     {

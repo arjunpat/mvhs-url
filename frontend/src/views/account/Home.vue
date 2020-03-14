@@ -24,6 +24,7 @@
       <span style="font-weight: bold; font-size: 22px;">Other Options</span>
       <br><br>
       <button @click="$router.push({ path: '/account/history' })" class="click-history">View your click history</button>
+      <button style="margin-left: 18px;" @click="$router.push({ path: '/about' })" class="click-history">About</button>
     </div>
   </div>
 </template>

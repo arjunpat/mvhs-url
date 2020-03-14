@@ -51,7 +51,7 @@
         </table> -->
         <hot-table
           :data="urls"
-          :colHeaders="['Shortened', 'Redirects To', 'Created', 'Expires', 'User', 'More']"
+          :colHeaders="['Shortened', 'Redirects To', 'Created', 'Expires', 'Name', 'User', 'More']"
           :editor="false"
           :columnSorting="true"
           :dropdownMenu="true"
@@ -61,6 +61,7 @@
             {data: '__redirects_to'},
             {data: '__created_time'},
             {data: '__expires', renderer: 'html'},
+            {data: '__name'},
             {data: 'registered_to'},
             {data: '__more', renderer: 'html'}
           ]"
@@ -97,6 +98,19 @@ export default {
       window.fetch(`${serverHost}/api/admin/all`, {
         credentials: 'include',
       }).then(res => res.json()).then(val => {
+
+        let emailToName = {};
+        this.users = val.data.users.sort((a, b) => b.created_time - a.created_time);
+        this.users.forEach(user => {
+          user.__url_amount = this.urls.filter(u => u.registered_to === user.email).length;
+          user.__name = user.first_name + ' ' + user.last_name;
+          user.__pic = `<div style="background-image: url(${user.profile_pic}); background-size: 30px 30px; background-repeat: no-repeat; background-position: center; width: 30px; height: 30px; margin: 0 auto;"></div>`;
+          user.__time = this.dateToString(user.created_time);
+          user.__suspend = !user.is_suspended;
+
+          emailToName[user.email] = user.__name;
+        });
+
         this.urls = val.data.urls.sort((a, b) => b.created_time - a.created_time);
         this.urls.forEach(url => {
           url.__shortened = `<a href="/${url.shortened}" target="_blank">url.mvhs.io/${url.shortened}</a>`;
@@ -113,15 +127,8 @@ export default {
           }
 
           url.__more = `<!-- ${url.id} --><a href="/#/account/url/${url.id}" target="_blank">More</a>`;
-        });
-
-        this.users = val.data.users.sort((a, b) => b.created_time - a.created_time);
-        this.users.forEach(user => {
-          user.__url_amount = this.urls.filter(u => u.registered_to === user.email).length;
-          user.__name = user.first_name + ' ' + user.last_name;
-          user.__pic = `<div style="background-image: url(${user.profile_pic}); background-size: 30px 30px; background-repeat: no-repeat; background-position: center; width: 30px; height: 30px; margin: 0 auto;"></div>`;
-          user.__time = this.dateToString(user.created_time);
-          user.__suspend = !user.is_suspended;
+          console.log(emailToName);
+          url.__name = emailToName[url.registered_to];
         });
 
         this.isLoading = false;
