@@ -28,14 +28,20 @@ router.get('/all', async (req, res) => {
     return;
   }
 
-  let [ users, urls ] = await Promise.all([
+  let timezoneOffsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let [ users, urls, urlClicksToday ] = await Promise.all([
     database.getAllUsers(),
-    database.getAllUrls()
+    database.getAllUrls(),
+    database.getHitsCountAfter(today.getTime() - timezoneOffsetMs)
   ]);
 
   res.send(responses.success({
     users,
-    urls
+    urls,
+    urlClicksToday
   }));
     
 });

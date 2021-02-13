@@ -1,54 +1,18 @@
 <template>
     <div>
       <span class="title">Admin Portal</span>
-      <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
-        <span style="font-weight: bold; font-size: 22px;">All Accounts</span>
+      <div class="card">
+        <span style="font-weight: bold; font-size: 22px;">Quick Facts</span>
         <br><br>
-        <div>
-          <span>Enable or suspend an account</span><br>
-          <input placeholder="Email" v-model="emailToSuspend" style="padding: 10px; width: 200px;">
-          <button style="padding: 10px;" class="main-button" @click="suspendUser(users.filter(u => u.email === emailToSuspend)[0])">Toggle Account Suspension</button>
-        </div>
-        <br>
-        <span>Number of accounts: {{ users.length }}</span>
-        <br><br>
-        <hot-table
-          :data="users"
-          :colHeaders="['Profile Picture', 'Name', 'Email', 'Creation', '# of URLs', 'Is Active']"
-          :editor="false"
-          :columnSorting="true"
-          :dropdownMenu="true"
-          :filters="true"
-          :columns="[
-            {data: '__pic', renderer: 'html'},
-            {data: '__name'},
-            {data: 'email'},
-            {data: '__time'},
-            {data: '__url_amount'},
-            {data: '__suspend'},
-          ]"
-          height="300"
-          stretchH="all"
-          licenseKey="non-commercial-and-evaluation"
-        ></hot-table>
+        <p>URL Clicks Today: {{  urlClicksToday }}</p>
+        <p>Number of users: {{ users.length }}</p>
+        <p>Number of urls: {{ urls.length }}</p>
       </div>
-      <div style="padding: 25px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); margin: 18px 16px; border-radius: 8px;">
+      <div class="card">
         <span style="font-weight: bold; font-size: 22px;">All Shortened URLs</span>
         <br>
         <span style="color: red; font-size: 14px;">Red signifies an expired URL</span>
         <br><br>
-        <!-- <table style="width: 100%;">
-          <tr style="border-bottom: 1px solid #ccc;">
-            <th>Shortened</th>
-            <th>Redirects To</th>
-            <th>Created</th>
-            <th>Expires</th>
-            <th>Clicks</th>
-            <th>User</th>
-            <th>More</th>
-          </tr>
-          <Url v-for="url of urls" :key="url.id" v-bind:url="url"></Url>
-        </table> -->
         <hot-table
           :data="urls"
           :colHeaders="['Shortened', 'Redirects To', 'Created', 'Expires', 'Name', 'User', 'More']"
@@ -70,22 +34,50 @@
           stretchH="all"
         ></hot-table>
       </div>
+      <div class="card">
+        <span style="font-weight: bold; font-size: 22px;">All Accounts</span>
+        <br><br>
+        <div>
+          <span>Enable or suspend an account</span><br>
+          <input placeholder="Email" v-model="emailToSuspend" style="padding: 10px; width: 200px;">
+          <button style="padding: 10px;" class="main-button" @click="suspendUser(users.filter(u => u.email === emailToSuspend)[0])">Toggle Account Suspension</button>
+        </div>
+        <br>
+        <hot-table
+          :data="users"
+          :colHeaders="['Profile Picture', 'Name', 'Email', 'Creation', '# of URLs', 'Is Active']"
+          :editor="false"
+          :columnSorting="true"
+          :dropdownMenu="true"
+          :filters="true"
+          :columns="[
+            {data: '__pic', renderer: 'html'},
+            {data: '__name'},
+            {data: 'email'},
+            {data: '__time'},
+            {data: '__url_amount'},
+            {data: '__suspend'},
+          ]"
+          height="300"
+          stretchH="all"
+          licenseKey="non-commercial-and-evaluation"
+        ></hot-table>
+      </div>
     </div>
 </template>
 
 <script>
 import { serverHost, dateToString } from '@/constants';
-import Url from '@/views/components/Url.vue';
 
 export default {
   components: {
-    Url,
     HotTable: () => import('@handsontable/vue').then(({ HotTable }) => HotTable)
   },
   data() {
     return {
       users: [],
       urls: [],
+      urlClicksToday: 'Loading...',
       emailToSuspend: ''
     }
   },
@@ -99,10 +91,19 @@ export default {
         credentials: 'include',
       }).then(res => res.json()).then(val => {
 
+        let urlCountByUser = {};
+        for (let each of val.data.urls) {
+          if (!urlCountByUser[each.registered_to]) {
+            urlCountByUser[each.registered_to] = 0;
+          }
+          urlCountByUser[each.registered_to]++;
+        }
+
+        console.log(urlCountByUser);
         let emailToName = {};
         this.users = val.data.users.sort((a, b) => b.created_time - a.created_time);
         this.users.forEach(user => {
-          user.__url_amount = this.urls.filter(u => u.registered_to === user.email).length;
+          user.__url_amount = urlCountByUser[user.email];
           user.__name = user.first_name + ' ' + user.last_name;
           user.__pic = `<div style="background-image: url(${user.profile_pic}); background-size: 30px 30px; background-repeat: no-repeat; background-position: center; width: 30px; height: 30px; margin: 0 auto;"></div>`;
           user.__time = this.dateToString(user.created_time);
@@ -127,11 +128,10 @@ export default {
           }
 
           url.__more = `<!-- ${url.id} --><a href="/#/account/url/${url.id}" target="_blank">More</a>`;
-          console.log(emailToName);
           url.__name = emailToName[url.registered_to];
         });
 
-        this.isLoading = false;
+        this.urlClicksToday = val.data.urlClicksToday;
       });
     },
     dateToString(date) {
@@ -165,9 +165,7 @@ export default {
       window.fetch(`${serverHost}/api/admin/toggle-suspension`, {
         credentials: 'include',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email })
       }).then(res => res.json()).then(val => {
         this.init();
@@ -202,5 +200,12 @@ th {
 td {
   text-align: left;
   padding: 12px 4px;
+}
+
+.card {
+  padding: 25px;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2);
+  margin: 18px 16px;
+  border-radius: 8px;
 }
 </style>

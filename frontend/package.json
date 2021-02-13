@@ -8,15 +8,15 @@
     "watch": "vue-cli-service build --watch --mode development"
   },
   "dependencies": {
-    "@handsontable/vue": "^4.1.0",
-    "chart.js": "^2.8.0",
-    "handsontable": "^7.1.1",
-    "vue": "^2.6.10",
-    "vue-router": "^3.1.2"
+    "@handsontable/vue": "^4.1.1",
+    "chart.js": "^2.9.3",
+    "handsontable": "^7.4.2",
+    "vue": "^2.6.11",
+    "vue-router": "^3.1.6"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.10.0",
-    "@vue/cli-service": "^3.10.0",
-    "vue-template-compiler": "^2.6.10"
+    "@vue/cli-plugin-babel": "^3.12.1",
+    "@vue/cli-service": "^3.12.1",
+    "vue-template-compiler": "^2.6.11"
   }
 }

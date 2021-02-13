@@ -85,6 +85,10 @@ class Database {
     return this.query('SELECT * FROM users');
   }
 
+  getHitsCountAfter(time) {
+    return this.query('SELECT COUNT(*) FROM hits WHERE time > ?', [time]).then(res => res[0]['COUNT(*)']);
+  }
+
   getUrlById(id) {
     return this.query('SELECT * FROM urls WHERE id = ?', [id]);
   }
