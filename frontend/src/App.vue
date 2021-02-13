@@ -37,11 +37,8 @@ export default {
   },
   methods: {
     loadProfile() {
-      setTimeout(() => {
-        if (!getCookie('mvhs_url'))
-          return this.loadProfile();
-
-        window.fetch(`${serverHost}/api/profile`, {
+      if (getCookie('mvhs_url')) {
+         window.fetch(`${serverHost}/api/profile`, {
           credentials: 'include'
         }).then(res => res.json()).then(res => {
 
@@ -59,7 +56,11 @@ export default {
 
           window.profile = res;
         });
-      }, 1000);
+      } else {
+        setTimeout(() => {
+          this.loadProfile();
+        }, 1000);
+      }
     },
     logout() {
       window.fetch(`${serverHost}/api/logout`, {
