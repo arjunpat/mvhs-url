@@ -5,7 +5,7 @@
     <br>
     <div style="margin: 0 auto; max-width: 1000px;">
       <h2>Who made this application and how can I report bugs?</h2>
-      <span>This application was made for the MVHS Advanced Computer Science Final Project by Arjun Patrawala (2021).<br>Send any bugs to <a href="mailto:100021830@mvla.net">100021830@mvla.net</a>, and we will try to fix them as soon as possible.</span>
+      <span>This application was made by Arjun Patrawala (MVHS Class of 2021).<br>Send any bugs to <a href="mailto:100021830@mvla.net">100021830@mvla.net</a>, and we will try to fix them as soon as possible.</span>
       <br><br><br>
       <h2>How many users can this handle at a time?</h2>
       <span>Recently, this website redirected all of MVHS to a form at the same time with no issues (almost 2000 students simultaneously), so you can feel safe about using this for small and large events.</span>

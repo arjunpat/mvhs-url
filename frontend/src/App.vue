@@ -19,6 +19,7 @@
       <br>
       <h2>Please sign out and log in with your MVLA account.<br><br>If you are having difficulty logging out of this application, open google.com, sign into your MVLA account there, and then try to logout of this application.</h2>
     </div>
+    <div style="padding: 10px; text-align: center;">This website has no affiliation with and is not endorsed by Mountain View High School. <a @click="$router.push({ path: '/about' })" style="color: blue; cursor: pointer; text-decoration: underline;">See more information here.</a></div>
   </div>
 </template>
 
