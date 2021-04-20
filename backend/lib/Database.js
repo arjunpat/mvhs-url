@@ -1,5 +1,6 @@
 const fs = require('fs');
 const mysql = require('mysql');
+const helpers = require('./helpers.js');
 
 class Database {
 
@@ -56,7 +57,7 @@ class Database {
   }
 
   getUrlSummaryById(id) {
-    return this.query('SELECT shortened, redirects_to, created_time, expires, registered_to, (SELECT COUNT(*) FROM hits WHERE url_id = id) as clicks FROM urls WHERE id = ?', [ id ]).then(result => {
+    return this.query('SELECT shortened, redirects_to, created_time, expires, registered_to, (SELECT COUNT(*) FROM hits WHERE url_id = id) as clicks, (SELECT COUNT(*) FROM hits WHERE url_id = id AND qrcode = true) as qrcode_clicks FROM urls WHERE id = ?', [ id ]).then(result => {
       if (result.length !== 1) return false;
 
       return result[0];
@@ -100,14 +101,14 @@ class Database {
   createNewUser(d) {
     return this.query(
       'INSERT INTO users (email, first_name, last_name, profile_pic, created_time) VALUES (?, ?, ?, ?, ?)',
-      [d.email, d.first_name, d.last_name, d.profile_pic, Date.now()],
+      [d.email, d.first_name, d.last_name, d.profile_pic, helpers.getTime()],
     );
   }
 
   createNewHit(d) {
     return this.query(
-      'INSERT INTO hits (time, url_id, ip, referrer, email) VALUES (?, ?, ?, ?, ?)',
-      [d.time, d.url_id, d.ip, d.referrer, d.email]
+      'INSERT INTO hits (time, url_id, ip, referrer, email, qrcode) VALUES (?, ?, ?, ?, ?, ?)',
+      [d.time, d.url_id, d.ip, d.referrer, d.email, d.qrcode]
     );
   }
 
@@ -119,7 +120,7 @@ class Database {
   }
 
   cancelUrlById(id) {
-    return this.query('UPDATE urls SET expires = ? WHERE id = ?', [ Date.now(), id ]);
+    return this.query('UPDATE urls SET expires = ? WHERE id = ?', [ helpers.getTime(), id ]);
   }
 
   updateUser(vals) {

@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS hits (
 	ip TINYTEXT,
 	referrer TINYTEXT,
 	email VARCHAR(100),
+	qrcode BOOLEAN,
 	INDEX (url_id),
 	INDEX (email),
 	INDEX (time)

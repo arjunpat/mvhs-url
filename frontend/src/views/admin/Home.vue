@@ -99,7 +99,6 @@ export default {
           urlCountByUser[each.registered_to]++;
         }
 
-        console.log(urlCountByUser);
         let emailToName = {};
         this.users = val.data.users.sort((a, b) => b.created_time - a.created_time);
         this.users.forEach(user => {

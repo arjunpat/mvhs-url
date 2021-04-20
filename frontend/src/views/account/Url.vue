@@ -7,13 +7,16 @@
           <p v-if="url.expired" style="background: #ddd; color: #ff0000; padding: 6px 10px; margin-bottom: 20px; font-weight: bold; border-radius: 4px;">This shortened URL has already expired and may now be in use by another user</p>
           <div class="info-display">
             <h1 style="display: block; margin-bottom: 6px;">Details</h1>
-            <p>Total clicks: {{ url.clicks }}</p>
-            <p v-if="!url.expired">Expires: {{ toDateString(this.url.expires) }}</p>
-            <p v-else>Already expired: {{ toDateString(this.url.expires) }}</p>
-            <p>Created: {{ toDateString(this.url.created_time) }}</p>
-            <p>Redirects to:</p>
+            <p><strong>Total clicks:</strong> {{ url.clicks }}</p>
+            <p><strong>Clicks from QR Code:</strong> {{ url.qrcode_clicks }}</p>
+            <p v-if="!url.expired"><strong>Expires:</strong> {{ toDateString(this.url.expires) }}</p>
+            <p v-else><strong>Expired on:</strong> {{ toDateString(this.url.expires) }}</p>
+            <p><strong>Created:</strong> {{ toDateString(this.url.created_time) }}</p>
+            <p><strong>Redirects to:</strong></p>
             <div><textarea :value="url.redirects_to" class="code" disabled="true"></textarea></div>
             <div v-if="!url.expired" style="margin-top: 10px;">
+              <button @click="downloadQR()" style="width: 100%;"><span style="font-size: 16px;">Download QR Code</span><i class="material-icons" style="font-size: 30px; vertical-align: middle; margin-left: 8px;">qr_code_2</i></button>
+              <br><br>
               <button @click="cancel()">Cancel URL Now</button>
               <button @click="change()" style="margin-left: 20px;">Change Link</button>
             </div>
@@ -29,7 +32,7 @@
 
 <script>
 import Chart from 'chart.js';
-import { serverHost } from '@/constants';
+import { serverHost, genQRCodeURL, toDataURL } from '@/constants';
 
 export default {
   data() {
@@ -90,9 +93,17 @@ export default {
       }).then(res => res.json()).then(res => {
         this.url = res.data;
         this.url.expired = !(this.url.expires > Date.now() || this.url.expires === null);
-
-        this.drawChart();
+        if (Object.keys(this.url.hitsByDay).length !== 0)
+          this.drawChart();
       });
+    },
+    async downloadQR() {
+      let anchor = document.createElement('a');
+      anchor.href = await toDataURL(genQRCodeURL(`https://url.mvhs.io/${this.url.shortened}?qrcode=true`));
+      anchor.download = this.url.shortened + '.png';
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
     },
     drawChart() {
       let hitsByDay = this.url.hitsByDay;
@@ -104,7 +115,6 @@ export default {
       });
 
       let labels = [];
-      let timezoneOffsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
       let start = new Date(datesInOrder[datesInOrder.length - 1]).getTime();
 
       for (let i = 0; i <= 7; i++) {
@@ -118,7 +128,7 @@ export default {
           labels: labels,
           datasets: [
             {
-              label: 'Hits',
+              label: 'Total Clicks',
               fill: true,
               data: (() => {
                 let arr = [];
@@ -151,7 +161,6 @@ export default {
 </script>
 
 <style scoped>
-
 .title {
   background: #fccb0b;
   padding: 15px 20px;

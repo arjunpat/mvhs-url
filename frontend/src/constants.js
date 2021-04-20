@@ -18,3 +18,14 @@ export function dateToString(date) {
     timeZone: 'America/Los_Angeles'
   });
 }
+
+export function genQRCodeURL(contents) {
+  return `https://chart.googleapis.com/chart?cht=qr&chs=500x500&chld=Q|2&chl=${encodeURIComponent(contents)}`;
+}
+
+export function toDataURL(url) {
+  return fetch(url, {
+    mode: 'cors',
+    credentials: 'omit'
+  }).then(res => res.blob()).then(blob => URL.createObjectURL(blob));
+}

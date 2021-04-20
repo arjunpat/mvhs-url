@@ -1,8 +1,9 @@
 const router = require('express').Router();
+const helpers = require('./helpers.js');
 let database, adminEmails, httpToken;
 
 router.get('/:shortened', async (req, res, next) => {
-  let now = Date.now();
+  let now = helpers.getTime();
   let result = await database.getLatestUrlByShortened(req.params.shortened);
 
   if (!result || (typeof result.expires === 'number' && result.expires < now)) {
@@ -25,7 +26,8 @@ router.get('/:shortened', async (req, res, next) => {
     url_id: result.id,
     ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
     referrer: req.headers.referer || null,
-    email
+    email,
+    qrcode: !!req.query.qrcode
   });
 });
 

@@ -4,6 +4,7 @@
  */
 
 const crypto = require('crypto');
+const helpers = require('./helpers.js');
 
 class HttpToken {
 	constructor(encryptionSecret, initVector, clientSecret = '') {
@@ -36,7 +37,7 @@ class HttpToken {
 	generateToken(payload) {
 		let token = [
 			{
-				cre: Date.now(),
+				cre: helpers.getTime(),
 				ser: this.serverName,
 				sec: this.clientSecret
 			},

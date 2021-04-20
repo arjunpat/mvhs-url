@@ -3,6 +3,7 @@ const responses = require('./responses');
 
 const fetch = require('node-fetch');
 const { URLSearchParams } = require('url');
+const helpers = require('./helpers.js');
 
 let database, adminEmails, httpToken;
 
@@ -97,7 +98,7 @@ router.post('/create', async (req, res) => {
     return res.send(responses.error('suspended_account'));
 
   let { shortened, redirects_to, expires_in, recaptchaToken } = req.body;
-  let now = Date.now();
+  let now = helpers.getTime();
   let expires = now;
 
   if (!shortened || !redirects_to || !expires_in || !recaptchaToken)
@@ -134,8 +135,9 @@ router.post('/create', async (req, res) => {
     expires = null;
   }
   
+  let id = generateId(6);
   let result = await database.createNewUrl({
-    id: generateId(6),
+    id,
     shortened,
     redirects_to,
     expires,
@@ -144,7 +146,7 @@ router.post('/create', async (req, res) => {
   });
 
   if (result.affectedRows === 1) {
-    res.send(responses.success());
+    res.send(responses.success({ id }));
   }
 });
 
@@ -238,7 +240,7 @@ router.post('/cancel', async (req, res) => {
 router.post('/availability', async (req, res) => {
   let url = await database.getLatestUrlByShortened(req.body.shortened);
 
-  if (inUse(url, Date.now())) {
+  if (inUse(url, helpers.getTime())) {
     return res.send(responses.success({
       availability: 'none'
     }));
