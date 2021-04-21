@@ -32,16 +32,18 @@ router.get('/all', async (req, res) => {
   let today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  let [ users, urls, urlClicksToday ] = await Promise.all([
+  let [ users, urls, urlClicksToday, qrClicksToday ] = await Promise.all([
     database.getAllUsers(),
     database.getAllUrls(),
-    database.getHitsCountAfter(today.getTime() - timezoneOffsetMs)
+    database.getHitsCountAfter(today.getTime() - timezoneOffsetMs),
+    database.getQRHitsCountAfter(today.getTime() - timezoneOffsetMs)
   ]);
 
   res.send(responses.success({
     users,
     urls,
-    urlClicksToday
+    urlClicksToday,
+    qrClicksToday
   }));
     
 });

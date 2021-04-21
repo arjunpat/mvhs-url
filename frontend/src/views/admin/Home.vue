@@ -5,6 +5,7 @@
         <span style="font-weight: bold; font-size: 22px;">Quick Facts</span>
         <br><br>
         <p>URL Clicks Today: {{  urlClicksToday }}</p>
+        <p>URL Clicks from QR Code Today: {{  qrClicksToday }}</p>
         <p>Number of users: {{ users.length }}</p>
         <p>Number of urls: {{ urls.length }}</p>
       </div>
@@ -78,6 +79,7 @@ export default {
       users: [],
       urls: [],
       urlClicksToday: 'Loading...',
+      qrClicksToday: 'Loading...',
       emailToSuspend: ''
     }
   },
@@ -90,6 +92,8 @@ export default {
       window.fetch(`${serverHost}/api/admin/all`, {
         credentials: 'include',
       }).then(res => res.json()).then(val => {
+        this.urlClicksToday = val.data.urlClicksToday;
+        this.qrClicksToday = val.data.qrClicksToday;
 
         let urlCountByUser = {};
         for (let each of val.data.urls) {
@@ -129,8 +133,6 @@ export default {
           url.__more = `<!-- ${url.id} --><a href="/#/account/url/${url.id}" target="_blank">More</a>`;
           url.__name = emailToName[url.registered_to];
         });
-
-        this.urlClicksToday = val.data.urlClicksToday;
       });
     },
     dateToString(date) {
