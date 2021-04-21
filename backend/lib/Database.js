@@ -70,7 +70,7 @@ class Database {
 
   getHistoryByEmail(email, before) {
     return this.query(`
-      SELECT h.time, u.shortened, u.redirects_to, u.expires, a.first_name, a.last_name
+      SELECT h.time, h.qrcode, u.shortened, u.redirects_to, u.expires, a.first_name, a.last_name
       FROM hits h
         LEFT JOIN urls u ON h.url_id = u.id
         LEFT JOIN users a ON u.registered_to = a.email

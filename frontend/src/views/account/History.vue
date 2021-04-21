@@ -6,10 +6,10 @@
     <div style="margin: 0 auto; max-width: 750px;">
       <span>Here, you can see all shortened links you have used recently, so you can refer back to them if needed.</span>
       <br><br>
-      <div v-for="entry of tableValues" style="padding: 15px; border-bottom: 1px solid #ccc; margin: 0px 16px 0px 16px;">
+      <div v-for="entry of tableValues" :key="entry.time" style="padding: 15px; border-bottom: 1px solid #ccc; margin: 0px 16px 0px 16px;">
         <div style="display: flex;">
           <div style="flex: 3;">
-            <span style="color: #666; font-size: 14px;">Clicked on {{ entry.first_name }} {{ entry.last_name }}'s URL:</span><br>
+            <span style="color: #666; font-size: 14px;">{{ entry.qrcode ? 'Scanned' : 'Clicked on' }} {{ entry.first_name }} {{ entry.last_name }}'s URL:</span><br>
             <span style="font-size: 22px; font-weight: bold;">url.mvhs.io/{{ entry.shortened }}</span><span style="color: red;" v-if="typeof entry.expires === 'number' && Date.now() > entry.expires"> (expired)</span><br>
             <div style="height: 3px;"></div>
             <span v-if="typeof entry.expires === 'number' && Date.now() > entry.expires">which redirected to </span>
