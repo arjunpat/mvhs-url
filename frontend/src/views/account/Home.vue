@@ -16,7 +16,7 @@
             <th>Clicks</th>
             <th>More</th>
           </tr>
-          <div v-if="urlsToShow.length === 0" style="padding: 15px;">There is nothing to show here. Create your first shortened URL in the "Home" tab.</div>
+          <div v-if="urlsToShow.length === 0 && !isLoading" style="padding: 15px;">There is nothing to show here. Create your first shortened URL in the "Home" tab.</div>
           <Url v-for="url of urlsToShow" :key="url.id" v-bind:url="url"></Url>
         </table>
       </div>

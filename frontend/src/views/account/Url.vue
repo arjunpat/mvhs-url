@@ -8,7 +8,7 @@
           <div class="info-display">
             <h1 style="display: block; margin-bottom: 6px;">Details</h1>
             <p><strong>Total clicks:</strong> {{ url.clicks }}</p>
-            <p><strong>Clicks from QR Code:</strong> {{ url.qrcode_clicks }}</p>
+            <p v-if="url.qrcode_clicks !== 0"><strong>Clicks from QR Code:</strong> {{ url.qrcode_clicks }}</p>
             <p v-if="!url.expired"><strong>Expires:</strong> {{ toDateString(this.url.expires) }}</p>
             <p v-else><strong>Expired on:</strong> {{ toDateString(this.url.expires) }}</p>
             <p><strong>Created:</strong> {{ toDateString(this.url.created_time) }}</p>
