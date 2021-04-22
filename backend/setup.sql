@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS urls (
 	id VARCHAR(30) PRIMARY KEY,
 	shortened VARCHAR(50),
-	redirects_to TINYTEXT,
+	redirects_to TEXT,
 	created_time BIGINT UNSIGNED,
 	expires BIGINT UNSIGNED,
 	registered_to VARCHAR(100),
