@@ -95,7 +95,11 @@ class Database {
   }
 
   getUrlById(id) {
-    return this.query('SELECT * FROM urls WHERE id = ?', [id]);
+    return this.query('SELECT * FROM urls WHERE id = ?', [id]).then(res => {
+      if (res.length !== 1) return false;
+
+      return res[0];
+    })
   }
   
   toggleSuspension(email) {
