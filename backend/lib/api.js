@@ -225,6 +225,7 @@ router.post('/cancel', async (req, res) => {
   let url = await database.getUrlById(url_id);
 
   console.log(url, req.email);
+  console.log(url.registered_to !== req.email);
   if (!adminEmails.includes(req.email) && url.registered_to !== req.email) {
     return res.send(responses.error('not_auth'));
   }
