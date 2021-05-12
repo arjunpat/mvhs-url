@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@handsontable/vue": "^4.1.1",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "handsontable": "^7.4.2",
     "vue": "^2.6.11",
     "vue-router": "^3.1.6"
