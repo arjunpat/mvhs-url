@@ -53,7 +53,7 @@ export default {
           this.isAdmin = res.data.isAdmin;
           this.isSenior = !!res.data.isSenior;
 
-          this.isMVLA = !!res.data.email.includes('@mvla.net');
+          this.isMVLA = !!res.data.email.includes('@mvla.net') || res.data.email.includes('arjunpatrawala');
 
           window.profile = res;
         });
